@@ -42,7 +42,7 @@ resource "google_compute_firewall" "gcp_hc_ip_allow" {
 
 resource "google_storage_bucket" "cn_lb" {
   name     = "${var.project}-l7-default-backend-${local.random_suffix}"
-  location = var.region
+  location = var.backend_bucket_location
 }
 
 resource "google_compute_health_check" "cn_lb" {

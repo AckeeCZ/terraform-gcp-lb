@@ -80,3 +80,9 @@ variable "hostname" {
   type        = string
   description = "Hostname to route to backend created from named NEGs"
 }
+
+variable "backend_bucket_location" {
+  type        = string
+  description = "GCS location(https://cloud.google.com/storage/docs/locations) of bucket where invalid requests are routed."
+  default     = "EUROPE-WEST3"
+}
