@@ -86,3 +86,9 @@ variable "backend_bucket_location" {
   description = "GCS location(https://cloud.google.com/storage/docs/locations) of bucket where invalid requests are routed."
   default     = "EUROPE-WEST3"
 }
+
+variable "managed_certificate_name" {
+  type        = string
+  description = "Name of Google-managed certificate. Useful when migrating from Ingress-provisioned load balancer"
+  default     = null
+}

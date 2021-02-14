@@ -2,7 +2,8 @@ locals {
   zone_count    = length(data.google_compute_zones.available.names)
   random_suffix = random_string.random_suffix.result
   // this can be expanded to support other NEGs for migration purposes later
-  backends = var.additional_negs != null ? concat(var.additional_negs, data.google_compute_network_endpoint_group.cn_lb) : data.google_compute_network_endpoint_group.cn_lb
+  backends                 = var.additional_negs != null ? concat(var.additional_negs, data.google_compute_network_endpoint_group.cn_lb) : data.google_compute_network_endpoint_group.cn_lb
+  managed_certificate_name = var.managed_certificate_name != null ? var.managed_certificate_name : "${var.name}-cert-managed"
 }
 
 data "google_compute_zones" "available" {
