@@ -152,6 +152,7 @@ pre-commit install
 | http\_backend\_timeout | Time of http request timeout (in seconds) | `string` | `"30"` | no |
 | keys\_alg | Algorithm used for private keys | `string` | `"RSA"` | no |
 | keys\_valid\_period | Validation period of the self signed key | `number` | `29200` | no |
+| managed\_certificate\_name | Name of Google-managed certificate. Useful when migrating from Ingress-provisioned load balancer | `string` | `null` | no |
 | name | Instance name | `string` | `"default_value"` | no |
 | neg\_name | Name of NEG to find in defined zone(s) | `string` | n/a | yes |
 | project | Project ID | `string` | n/a | yes |

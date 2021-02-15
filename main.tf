@@ -50,7 +50,7 @@ resource "google_compute_ssl_certificate" "gcs_certs" {
 }
 
 resource "google_compute_managed_ssl_certificate" "gcs_certs" {
-  name = "${var.name}-cert-managed"
+  name = local.managed_certificate_name
 
   managed {
     domains = [var.hostname]
