@@ -146,18 +146,10 @@ resource "google_compute_target_http_proxy" "non_tls" {
   count   = var.allow_non_tls_frontend ? 1 : 0
 }
 
-resource "google_compute_global_forwarding_rule" "google_managed_non_tls" {
+resource "google_compute_global_forwarding_rule" "non_tls" {
   name       = "non-tls-fw-rule-${local.random_suffix}"
   target     = google_compute_target_http_proxy.non_tls[0].id
   ip_address = google_compute_global_address.gca.address
   port_range = "80"
-  count      = (var.google_managed_tls && var.allow_non_tls_frontend) ? 1 : 0
-}
-
-resource "google_compute_global_forwarding_rule" "self_signed_non_tls" {
-  name       = "non-tls-fw-rule-${local.random_suffix}"
-  target     = google_compute_target_http_proxy.non_tls[0].id
-  ip_address = google_compute_global_address.gca.address
-  port_range = "80"
-  count      = (var.allow_non_tls_frontend && var.self_signed_tls) ? 1 : 0
+  count      = var.allow_non_tls_frontend ? 1 : 0
 }
