@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.3.0] - 2021-02-16
+### Added
+- Parameter `allow_non_tls_frontend` which creates Load balancer frontend listening on port 80
+
 ## [v1.2.0] - 2021-02-14
 ### Added
 - Parameter `managed_certificate_name` which can override default managed certificate name - useful when migrating from Ingress-provisioned

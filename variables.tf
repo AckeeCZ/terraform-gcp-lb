@@ -92,3 +92,9 @@ variable "managed_certificate_name" {
   description = "Name of Google-managed certificate. Useful when migrating from Ingress-provisioned load balancer"
   default     = null
 }
+
+variable "allow_non_tls_frontend" {
+  type        = string
+  description = "If true, enables port 80 frontend - creates non-TLS (http://) variant of LB"
+  default     = false
+}

@@ -144,6 +144,7 @@ pre-commit install
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | additional\_negs | You can pass aditional data source objects of NEG's which will be added to load\_balancer | `any` | `null` | no |
+| allow\_non\_tls\_frontend | If true, enables port 80 frontend - creates non-TLS (http://) variant of LB | `string` | `false` | no |
 | backend\_bucket\_location | GCS location(https://cloud.google.com/storage/docs/locations) of bucket where invalid requests are routed. | `string` | `"EUROPE-WEST3"` | no |
 | default\_network\_name | Default firewall network name, used to place a default fw allowing google's default health checks. Leave blank if you use GKE ingress-provisioned LB (now deprecated) | `string` | `"default"` | no |
 | google\_managed\_tls | If true, creates Google-managed TLS cert | `bool` | `false` | no |
