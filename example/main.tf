@@ -3,7 +3,7 @@ provider "random" {
 }
 
 provider "google" {
-  version = "~> 3.51.0"
+  version = "~> 3.57.0"
   project = var.project
   region  = var.zone
 }
