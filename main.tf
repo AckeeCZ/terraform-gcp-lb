@@ -53,7 +53,7 @@ resource "google_compute_managed_ssl_certificate" "gcs_certs" {
   name = local.managed_certificate_name
 
   managed {
-    domains = [var.hostname]
+    domains = [var.hostnames[0]]
   }
   count = var.google_managed_tls ? 1 : 0
 }

@@ -76,9 +76,9 @@ variable "http_backend_protocol" {
   }
 }
 
-variable "hostname" {
-  type        = string
-  description = "Hostname to route to backend created from named NEGs"
+variable "hostnames" {
+  type        = list(string)
+  description = "List of hostnames to route to backend created from named NEGs. Beware if you are using google_managed_tls - certificate will be created only for first entry in this list"
 }
 
 variable "backend_bucket_location" {
