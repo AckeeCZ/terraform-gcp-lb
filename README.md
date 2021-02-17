@@ -13,12 +13,12 @@ data "cloudflare_zones" "ackee_cz" {
 }
 
 module "api-unicorn" {
-  source          = "../terraform-gcp-lb"
+  source          = "git::ssh://git@gitlab.ack.ee/Infra/tf-module/terraform-gcp-lb.git?ref=v2.0.0"
   name            = "api-unicorn"
   project         = var.project
   region          = var.region
   neg_name        = "ackee-api-unicorn"
-  hostname        = "api-unicorn.ackee.cz"
+  hostnames       = ["api-unicorn.ackee.cz", "api-unicorn2.ackee.cz"]
   self_signed_tls = true
 }
 
@@ -31,7 +31,7 @@ resource "cloudflare_record" "api" {
   proxied = true
 }
 ```
-If NEG named `ackee-api-unicorn` exists and CF is set to "SSL:Full" you should have working app now on https://api-unicorn.ackee.cz
+If NEG named `ackee-api-unicorn` exists and CF is set to "SSL:Full" you should have working app now on https://api-unicorn.ackee.cz and https://api-unicorn2.ackee.cz
 
 ### HTTPS Load-balancer with Google-managed certificate and Cloudflare DNS record creation:
 
@@ -43,12 +43,12 @@ data "cloudflare_zones" "ackee_cz" {
 }
 
 module "api-unicorn" {
-  source             = "../terraform-gcp-lb"
+  source             = "git::ssh://git@gitlab.ack.ee/Infra/tf-module/terraform-gcp-lb.git?ref=v2.0.0"
   name               = "api-unicorn"
   project            = var.project
   region             = var.region
   neg_name           = "ackee-api-unicorn"
-  hostname           = "api-unicorn.ackee.cz"
+  hostnames          = ["api-unicorn.ackee.cz"]
   google_managed_tls = true
 }
 
@@ -62,6 +62,7 @@ resource "cloudflare_record" "api" {
 }
 ```
 If NEG named `ackee-api-unicorn` exists you should have working app now on https://api-unicorn.ackee.cz
+**Beware**: If you use more then one hostname with Google-managed certificate, only one certificate, with first hostname in list, will be created. 
 
 ### HTTPS Load-balancer with preexisting NEG, Google-managed certificate and Cloudflare DNS record creation:
 
@@ -79,12 +80,12 @@ data "cloudflare_zones" "ackee_cz" {
 }
 
 module "api-unicorn" {
-  source             = "../terraform-gcp-lb"
+  source             = "git::ssh://git@gitlab.ack.ee/Infra/tf-module/terraform-gcp-lb.git?ref=v2.0.0"
   name               = "api-unicorn"
   project            = var.project
   region             = var.region
   neg_name           = "ackee-api-unicorn"
-  hostname           = "api-unicorn.ackee.cz"
+  hostnames          = ["api-unicorn.ackee.cz"]
   additional_negs    = data.google_compute_network_endpoint_group.old_neg
   google_managed_tls = true
 }
@@ -102,6 +103,7 @@ resource "cloudflare_record" "api" {
 If we pass `data.google_compute_network_endpoint_group` resource as value for `additional_negs` parameter, then our new load-balancer
 gets created from new named NEG's auto discovered by name in `neg_name` parameter and from NEG's from `additional_negs` parameter - 
 this should be used when migrating from old setup, so we balance to both new and old application.
+**Beware**: If you use more then one hostname with Google-managed certificate, only one certificate, with first hostname in list, will be created. 
 
 ## Creation of NEG's is not automatic!
 
@@ -148,7 +150,7 @@ pre-commit install
 | backend\_bucket\_location | GCS location(https://cloud.google.com/storage/docs/locations) of bucket where invalid requests are routed. | `string` | `"EUROPE-WEST3"` | no |
 | default\_network\_name | Default firewall network name, used to place a default fw allowing google's default health checks. Leave blank if you use GKE ingress-provisioned LB (now deprecated) | `string` | `"default"` | no |
 | google\_managed\_tls | If true, creates Google-managed TLS cert | `bool` | `false` | no |
-| hostname | Hostname to route to backend created from named NEGs | `string` | n/a | yes |
+| hostnames | List of hostnames to route to backend created from named NEGs. Beware if you are using google\_managed\_tls - certificate will be created only for first entry in this list | `list(string)` | n/a | yes |
 | http\_backend\_protocol | HTTP backend protocol, one of: HTTP/HTTP2 | `string` | `"HTTP"` | no |
 | http\_backend\_timeout | Time of http request timeout (in seconds) | `string` | `"30"` | no |
 | keys\_alg | Algorithm used for private keys | `string` | `"RSA"` | no |

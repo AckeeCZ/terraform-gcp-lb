@@ -89,9 +89,12 @@ resource "google_compute_url_map" "cn_lb" {
   name            = "named-neg-lb-${var.name}-${local.random_suffix}"
   default_service = google_compute_backend_bucket.cn_lb.id
 
-  host_rule {
-    hosts        = [var.hostname]
-    path_matcher = "primary"
+  dynamic "host_rule" {
+    for_each = var.hostnames
+    content {
+      hosts        = [host_rule.value]
+      path_matcher = "primary"
+    }
   }
 
   path_matcher {
