@@ -66,10 +66,10 @@ resource "google_compute_health_check" "cn_lb" {
 
 }
 
-resource "google_compute_backend_service" "cn_lb" {
+resource "google_compute_backend_service" "app_backend" {
   provider = google-beta
 
-  name                  = "backend-${local.random_suffix}"
+  name                  = "backend-${var.name}-${local.random_suffix}"
   health_checks         = [google_compute_health_check.cn_lb.id]
   load_balancing_scheme = "EXTERNAL"
   protocol              = var.http_backend_protocol
@@ -99,7 +99,7 @@ resource "google_compute_url_map" "cn_lb" {
 
   path_matcher {
     name            = "primary"
-    default_service = google_compute_backend_service.cn_lb.id
+    default_service = google_compute_backend_service.app_backend.id
   }
 }
 
