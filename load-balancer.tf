@@ -49,6 +49,11 @@ resource "google_storage_bucket" "cn_lb" {
 resource "google_compute_health_check" "cn_lb" {
   name = "health-check-${local.random_suffix}"
 
+  timeout_sec         = var.timeout_sec
+  check_interval_sec  = var.check_interval_sec
+  healthy_threshold   = var.healthy_threshold
+  unhealthy_threshold = var.unhealthy_threshold
+
   dynamic "http_health_check" {
     for_each = var.http_backend_protocol == "HTTP" ? [1] : []
     content {

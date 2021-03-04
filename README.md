@@ -175,8 +175,10 @@ No Modules.
 | additional\_negs | You can pass aditional data source objects of NEG's which will be added to load\_balancer | `any` | `null` | no |
 | allow\_non\_tls\_frontend | If true, enables port 80 frontend - creates non-TLS (http://) variant of LB | `string` | `false` | no |
 | backend\_bucket\_location | GCS location(https://cloud.google.com/storage/docs/locations) of bucket where invalid requests are routed. | `string` | `"EUROPE-WEST3"` | no |
+| check\_interval\_sec | How often (in seconds) to send a health check. The default value is 5 seconds. | `number` | `5` | no |
 | default\_network\_name | Default firewall network name, used to place a default fw allowing google's default health checks. Leave blank if you use GKE ingress-provisioned LB (now deprecated) | `string` | `"default"` | no |
 | google\_managed\_tls | If true, creates Google-managed TLS cert | `bool` | `false` | no |
+| healthy\_threshold | A so-far unhealthy instance will be marked healthy after this many consecutive successes. The default value is 2. | `number` | `2` | no |
 | hostnames | List of hostnames to route to backend created from named NEGs. Beware if you are using google\_managed\_tls - certificate will be created only for first entry in this list | `list(string)` | n/a | yes |
 | http\_backend\_protocol | HTTP backend protocol, one of: HTTP/HTTP2 | `string` | `"HTTP"` | no |
 | http\_backend\_timeout | Time of http request timeout (in seconds) | `string` | `"30"` | no |
@@ -188,6 +190,8 @@ No Modules.
 | project | Project ID | `string` | n/a | yes |
 | region | GCP region where we will look for NEGs | `string` | n/a | yes |
 | self\_signed\_tls | If true, creates self-signed TLS cert | `bool` | `false` | no |
+| timeout\_sec | How long (in seconds) to wait before claiming failure. The default value is 5 seconds. It is invalid for timeout\_sec to have greater value than check\_interval\_sec. | `number` | `5` | no |
+| unhealthy\_threshold | A so-far healthy instance will be marked unhealthy after this many consecutive failures. The default value is 2. | `number` | `2` | no |
 | zone | GCP zone where we will look for NEGs - optional parameter, if not set, the we will automatically search in all zones in region | `string` | `null` | no |
 
 ## Outputs

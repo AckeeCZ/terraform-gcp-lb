@@ -27,7 +27,7 @@ module "api-unicorn" {
   project            = "FILL-IT-YOURSELF"
   region             = var.region
   neg_name           = "ackee-api-unicorn"
-  hostname           = "api-unicorn.ackee.cz"
+  hostnames          = ["api-unicorn.ackee.cz"]
   google_managed_tls = true
 }
 

@@ -98,3 +98,27 @@ variable "allow_non_tls_frontend" {
   description = "If true, enables port 80 frontend - creates non-TLS (http://) variant of LB"
   default     = false
 }
+
+variable "unhealthy_threshold" {
+  description = "A so-far healthy instance will be marked unhealthy after this many consecutive failures. The default value is 2."
+  type        = number
+  default     = 2
+}
+
+variable "healthy_threshold" {
+  description = "A so-far unhealthy instance will be marked healthy after this many consecutive successes. The default value is 2."
+  type        = number
+  default     = 2
+}
+
+variable "check_interval_sec" {
+  description = "How often (in seconds) to send a health check. The default value is 5 seconds."
+  type        = number
+  default     = 5
+}
+
+variable "timeout_sec" {
+  description = "How long (in seconds) to wait before claiming failure. The default value is 5 seconds. It is invalid for timeout_sec to have greater value than check_interval_sec."
+  type        = number
+  default     = 5
+}
