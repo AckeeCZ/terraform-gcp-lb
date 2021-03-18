@@ -178,6 +178,7 @@ No Modules.
 | check\_interval\_sec | How often (in seconds) to send a health check. The default value is 5 seconds. | `number` | `5` | no |
 | default\_network\_name | Default firewall network name, used to place a default fw allowing google's default health checks. Leave blank if you use GKE ingress-provisioned LB (now deprecated) | `string` | `"default"` | no |
 | google\_managed\_tls | If true, creates Google-managed TLS cert | `bool` | `false` | no |
+| health\_check\_request\_path | Health checked path (URN) | `string` | `"/healhtz"` | no |
 | healthy\_threshold | A so-far unhealthy instance will be marked healthy after this many consecutive successes. The default value is 2. | `number` | `2` | no |
 | hostnames | List of hostnames to route to backend created from named NEGs. Beware if you are using google\_managed\_tls - certificate will be created only for first entry in this list | `list(string)` | n/a | yes |
 | http\_backend\_protocol | HTTP backend protocol, one of: HTTP/HTTP2 | `string` | `"HTTP"` | no |

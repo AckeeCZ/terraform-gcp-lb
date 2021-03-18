@@ -58,14 +58,14 @@ resource "google_compute_health_check" "cn_lb" {
     for_each = var.http_backend_protocol == "HTTP" ? [1] : []
     content {
       port_specification = "USE_SERVING_PORT"
-      request_path       = "/healthz"
+      request_path       = var.health_check_request_path
     }
   }
   dynamic "http2_health_check" {
     for_each = var.http_backend_protocol == "HTTP2" ? [1] : []
     content {
       port_specification = "USE_SERVING_PORT"
-      request_path       = "/healthz"
+      request_path       = var.health_check_request_path
     }
   }
 
