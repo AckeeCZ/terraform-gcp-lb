@@ -126,5 +126,5 @@ variable "timeout_sec" {
 variable "health_check_request_path" {
   type        = string
   description = "Health checked path (URN)"
-  default     = "/healhtz"
+  default     = "/healthz"
 }
