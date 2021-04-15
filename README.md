@@ -130,74 +130,76 @@ pre-commit install
 
 | Name | Version |
 |------|---------|
-| terraform | >= 0.13 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| google | n/a |
-| google-beta | n/a |
-| random | n/a |
-| tls | n/a |
+| <a name="provider_google"></a> [google](#provider\_google) | n/a |
+| <a name="provider_google-beta"></a> [google-beta](#provider\_google-beta) | n/a |
+| <a name="provider_random"></a> [random](#provider\_random) | n/a |
+| <a name="provider_tls"></a> [tls](#provider\_tls) | n/a |
 
 ## Modules
 
-No Modules.
+No modules.
 
 ## Resources
 
-| Name |
-|------|
-| [google-beta_google_compute_backend_service](https://registry.terraform.io/providers/hashicorp/google-beta/latest/docs/resources/google_compute_backend_service) |
-| [google-beta_google_compute_global_forwarding_rule](https://registry.terraform.io/providers/hashicorp/google-beta/latest/docs/resources/google_compute_global_forwarding_rule) |
-| [google_compute_backend_bucket](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_backend_bucket) |
-| [google_compute_firewall](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_firewall) |
-| [google_compute_global_address](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_global_address) |
-| [google_compute_global_forwarding_rule](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_global_forwarding_rule) |
-| [google_compute_health_check](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_health_check) |
-| [google_compute_managed_ssl_certificate](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_managed_ssl_certificate) |
-| [google_compute_network_endpoint_group](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_network_endpoint_group) |
-| [google_compute_ssl_certificate](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_ssl_certificate) |
-| [google_compute_target_http_proxy](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_target_http_proxy) |
-| [google_compute_target_https_proxy](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_target_https_proxy) |
-| [google_compute_url_map](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_url_map) |
-| [google_compute_zones](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_zones) |
-| [google_storage_bucket](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket) |
-| [random_string](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) |
-| [tls_private_key](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) |
-| [tls_self_signed_cert](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/self_signed_cert) |
+| Name | Type |
+|------|------|
+| [google-beta_google_compute_backend_service.app_backend](https://registry.terraform.io/providers/hashicorp/google-beta/latest/docs/resources/google_compute_backend_service) | resource |
+| [google-beta_google_compute_global_forwarding_rule.google_managed](https://registry.terraform.io/providers/hashicorp/google-beta/latest/docs/resources/google_compute_global_forwarding_rule) | resource |
+| [google-beta_google_compute_global_forwarding_rule.self_signed](https://registry.terraform.io/providers/hashicorp/google-beta/latest/docs/resources/google_compute_global_forwarding_rule) | resource |
+| [google_compute_backend_bucket.cn_lb](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_backend_bucket) | resource |
+| [google_compute_firewall.gcp_hc_ip_allow](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_firewall) | resource |
+| [google_compute_global_address.gca](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_global_address) | resource |
+| [google_compute_global_forwarding_rule.non_tls](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_global_forwarding_rule) | resource |
+| [google_compute_health_check.cn_lb](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_health_check) | resource |
+| [google_compute_managed_ssl_certificate.gcs_certs](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_managed_ssl_certificate) | resource |
+| [google_compute_ssl_certificate.gcs_certs](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_ssl_certificate) | resource |
+| [google_compute_target_http_proxy.non_tls](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_target_http_proxy) | resource |
+| [google_compute_target_https_proxy.google_managed](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_target_https_proxy) | resource |
+| [google_compute_target_https_proxy.self_signed](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_target_https_proxy) | resource |
+| [google_compute_url_map.cn_lb](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_url_map) | resource |
+| [google_storage_bucket.cn_lb](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket) | resource |
+| [random_string.random_suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
+| [tls_private_key.web_lb_key](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
+| [tls_self_signed_cert.web_lb_cert](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/self_signed_cert) | resource |
+| [google_compute_network_endpoint_group.cn_lb](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_network_endpoint_group) | data source |
+| [google_compute_zones.available](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_zones) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| additional\_negs | You can pass aditional data source objects of NEG's which will be added to load\_balancer | `any` | `null` | no |
-| allow\_non\_tls\_frontend | If true, enables port 80 frontend - creates non-TLS (http://) variant of LB | `string` | `false` | no |
-| backend\_bucket\_location | GCS location(https://cloud.google.com/storage/docs/locations) of bucket where invalid requests are routed. | `string` | `"EUROPE-WEST3"` | no |
-| check\_interval\_sec | How often (in seconds) to send a health check. The default value is 5 seconds. | `number` | `5` | no |
-| default\_network\_name | Default firewall network name, used to place a default fw allowing google's default health checks. Leave blank if you use GKE ingress-provisioned LB (now deprecated) | `string` | `"default"` | no |
-| google\_managed\_tls | If true, creates Google-managed TLS cert | `bool` | `false` | no |
-| health\_check\_request\_path | Health checked path (URN) | `string` | `"/healthz"` | no |
-| healthy\_threshold | A so-far unhealthy instance will be marked healthy after this many consecutive successes. The default value is 2. | `number` | `2` | no |
-| hostnames | List of hostnames to route to backend created from named NEGs. Beware if you are using google\_managed\_tls - certificate will be created only for first entry in this list | `list(string)` | n/a | yes |
-| http\_backend\_protocol | HTTP backend protocol, one of: HTTP/HTTP2 | `string` | `"HTTP"` | no |
-| http\_backend\_timeout | Time of http request timeout (in seconds) | `string` | `"30"` | no |
-| keys\_alg | Algorithm used for private keys | `string` | `"RSA"` | no |
-| keys\_valid\_period | Validation period of the self signed key | `number` | `29200` | no |
-| managed\_certificate\_name | Name of Google-managed certificate. Useful when migrating from Ingress-provisioned load balancer | `string` | `null` | no |
-| name | Instance name | `string` | `"default_value"` | no |
-| neg\_name | Name of NEG to find in defined zone(s) | `string` | n/a | yes |
-| project | Project ID | `string` | n/a | yes |
-| region | GCP region where we will look for NEGs | `string` | n/a | yes |
-| self\_signed\_tls | If true, creates self-signed TLS cert | `bool` | `false` | no |
-| timeout\_sec | How long (in seconds) to wait before claiming failure. The default value is 5 seconds. It is invalid for timeout\_sec to have greater value than check\_interval\_sec. | `number` | `5` | no |
-| unhealthy\_threshold | A so-far healthy instance will be marked unhealthy after this many consecutive failures. The default value is 2. | `number` | `2` | no |
-| zone | GCP zone where we will look for NEGs - optional parameter, if not set, the we will automatically search in all zones in region | `string` | `null` | no |
+| <a name="input_additional_negs"></a> [additional\_negs](#input\_additional\_negs) | You can pass aditional data source objects of NEG's which will be added to load\_balancer | `any` | `null` | no |
+| <a name="input_allow_non_tls_frontend"></a> [allow\_non\_tls\_frontend](#input\_allow\_non\_tls\_frontend) | If true, enables port 80 frontend - creates non-TLS (http://) variant of LB | `string` | `false` | no |
+| <a name="input_backend_bucket_location"></a> [backend\_bucket\_location](#input\_backend\_bucket\_location) | GCS location(https://cloud.google.com/storage/docs/locations) of bucket where invalid requests are routed. | `string` | `"EUROPE-WEST3"` | no |
+| <a name="input_check_interval_sec"></a> [check\_interval\_sec](#input\_check\_interval\_sec) | How often (in seconds) to send a health check. The default value is 5 seconds. | `number` | `5` | no |
+| <a name="input_default_network_name"></a> [default\_network\_name](#input\_default\_network\_name) | Default firewall network name, used to place a default fw allowing google's default health checks. Leave blank if you use GKE ingress-provisioned LB (now deprecated) | `string` | `"default"` | no |
+| <a name="input_google_managed_tls"></a> [google\_managed\_tls](#input\_google\_managed\_tls) | If true, creates Google-managed TLS cert | `bool` | `false` | no |
+| <a name="input_health_check_request_path"></a> [health\_check\_request\_path](#input\_health\_check\_request\_path) | Health checked path (URN) | `string` | `"/healthz"` | no |
+| <a name="input_healthy_threshold"></a> [healthy\_threshold](#input\_healthy\_threshold) | A so-far unhealthy instance will be marked healthy after this many consecutive successes. The default value is 2. | `number` | `2` | no |
+| <a name="input_hostnames"></a> [hostnames](#input\_hostnames) | List of hostnames to route to backend created from named NEGs. Beware if you are using google\_managed\_tls - certificate will be created only for first entry in this list | `list(string)` | n/a | yes |
+| <a name="input_http_backend_protocol"></a> [http\_backend\_protocol](#input\_http\_backend\_protocol) | HTTP backend protocol, one of: HTTP/HTTP2 | `string` | `"HTTP"` | no |
+| <a name="input_http_backend_timeout"></a> [http\_backend\_timeout](#input\_http\_backend\_timeout) | Time of http request timeout (in seconds) | `string` | `"30"` | no |
+| <a name="input_keys_alg"></a> [keys\_alg](#input\_keys\_alg) | Algorithm used for private keys | `string` | `"RSA"` | no |
+| <a name="input_keys_valid_period"></a> [keys\_valid\_period](#input\_keys\_valid\_period) | Validation period of the self signed key | `number` | `29200` | no |
+| <a name="input_managed_certificate_name"></a> [managed\_certificate\_name](#input\_managed\_certificate\_name) | Name of Google-managed certificate. Useful when migrating from Ingress-provisioned load balancer | `string` | `null` | no |
+| <a name="input_name"></a> [name](#input\_name) | Instance name | `string` | `"default_value"` | no |
+| <a name="input_neg_name"></a> [neg\_name](#input\_neg\_name) | Name of NEG to find in defined zone(s) | `string` | n/a | yes |
+| <a name="input_project"></a> [project](#input\_project) | Project ID | `string` | n/a | yes |
+| <a name="input_region"></a> [region](#input\_region) | GCP region where we will look for NEGs | `string` | n/a | yes |
+| <a name="input_self_signed_tls"></a> [self\_signed\_tls](#input\_self\_signed\_tls) | If true, creates self-signed TLS cert | `bool` | `false` | no |
+| <a name="input_timeout_sec"></a> [timeout\_sec](#input\_timeout\_sec) | How long (in seconds) to wait before claiming failure. The default value is 5 seconds. It is invalid for timeout\_sec to have greater value than check\_interval\_sec. | `number` | `5` | no |
+| <a name="input_unhealthy_threshold"></a> [unhealthy\_threshold](#input\_unhealthy\_threshold) | A so-far healthy instance will be marked unhealthy after this many consecutive failures. The default value is 2. | `number` | `2` | no |
+| <a name="input_zone"></a> [zone](#input\_zone) | GCP zone where we will look for NEGs - optional parameter, if not set, the we will automatically search in all zones in region | `string` | `null` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| ip\_address | IP address |
+| <a name="output_ip_address"></a> [ip\_address](#output\_ip\_address) | IP address |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

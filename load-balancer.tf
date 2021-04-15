@@ -88,6 +88,10 @@ resource "google_compute_backend_service" "app_backend" {
       max_rate       = 1
     }
   }
+  log_config {
+    enable      = true
+    sample_rate = 1
+  }
 }
 
 resource "google_compute_url_map" "cn_lb" {
