@@ -38,6 +38,18 @@ resource "tls_self_signed_cert" "web_lb_cert" {
   count = var.self_signed_tls ? 1 : 0
 }
 
+resource "random_id" "external_certificate" {
+  byte_length = 4
+  prefix      = "${var.name}-cert-external-signed"
+
+  # For security, do not expose raw certificate values in the output
+  keepers = {
+    private_key = sha256(var.private_key)
+    certificate = sha256(var.certificate)
+  }
+  count = var.certificate != null ? 1 : 0
+}
+
 resource "google_compute_ssl_certificate" "gcs_certs" {
   name        = "${var.name}-cert-self-signed"
   private_key = tls_private_key.web_lb_key[0].private_key_pem
@@ -47,6 +59,17 @@ resource "google_compute_ssl_certificate" "gcs_certs" {
     create_before_destroy = true
   }
   count = var.self_signed_tls ? 1 : 0
+}
+
+resource "google_compute_ssl_certificate" "external_certs" {
+  name        = random_id.external_certificate[0].hex
+  private_key = var.private_key
+  certificate = var.certificate
+
+  lifecycle {
+    create_before_destroy = true
+  }
+  count = var.certificate != null ? 1 : 0
 }
 
 resource "google_compute_managed_ssl_certificate" "gcs_certs" {
