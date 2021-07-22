@@ -128,3 +128,17 @@ variable "health_check_request_path" {
   description = "Health checked path (URN)"
   default     = "/healthz"
 }
+
+variable "certificate" {
+  type        = string
+  description = "The certificate in PEM format. The certificate chain must be no greater than 5 certs long. The chain must include at least one intermediate cert. Note: This property is sensitive and will not be displayed in the plan."
+  default     = null
+  sensitive   = true
+}
+
+variable "private_key" {
+  type        = string
+  description = "The write-only private key in PEM format. Note: This property is sensitive and will not be displayed in the plan."
+  default     = null
+  sensitive   = true
+}
