@@ -111,6 +111,12 @@ variable "healthy_threshold" {
   default     = 2
 }
 
+variable "custom_health_check_ports" {
+  description = "Custom ports for GCE health checks, not needed unless your services are not in 30000-32767 or 3000, 5000"
+  default     = []
+  type        = list(string)
+}
+
 variable "check_interval_sec" {
   description = "How often (in seconds) to send a health check. The default value is 5 seconds."
   type        = number
