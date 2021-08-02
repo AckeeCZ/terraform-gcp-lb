@@ -29,7 +29,10 @@ resource "google_compute_firewall" "gcp_hc_ip_allow" {
 
   allow {
     protocol = "tcp"
-    ports    = ["30000-32767", "3000", "5000"]
+    ports = concat(
+      ["30000-32767", "3000", "5000"],
+      var.custom_health_check_ports
+    )
   }
 
   target_tags = ["k8s"]
