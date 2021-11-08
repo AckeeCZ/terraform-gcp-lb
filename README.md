@@ -131,6 +131,15 @@ Error: Required attribute is not set
 ```
 Also note, that purging app (typically with `helm delete`) does not automatically cleanup existing NEGs
 
+## Using example
+
+Because of chicken-egg mentioned in previous section, it is also not so easy to use provider example code. Running just `terraform apply` will fail
+on similiar error. Workaround is to create testing NEG first and load balancer above it in next step.
+```
+terraform apply -target=google_compute_network_endpoint_group.neg
+terraform apply
+```
+
 ## Before you do anything in this module
 
 Install pre-commit hooks by running following commands:
@@ -208,6 +217,7 @@ No modules.
 | <a name="input_http_backend_timeout"></a> [http\_backend\_timeout](#input\_http\_backend\_timeout) | Time of http request timeout (in seconds) | `string` | `"30"` | no |
 | <a name="input_keys_alg"></a> [keys\_alg](#input\_keys\_alg) | Algorithm used for private keys | `string` | `"RSA"` | no |
 | <a name="input_keys_valid_period"></a> [keys\_valid\_period](#input\_keys\_valid\_period) | Validation period of the self signed key | `number` | `29200` | no |
+| <a name="input_log_config_sample_rate"></a> [log\_config\_sample\_rate](#input\_log\_config\_sample\_rate) | The value of the field must be in [0, 1]. This configures the sampling rate of requests to the load balancer where 1.0 means all logged requests are reported and 0.0 means no logged requests are reported. The default value is 1.0. | `string` | `"1.0"` | no |
 | <a name="input_managed_certificate_name"></a> [managed\_certificate\_name](#input\_managed\_certificate\_name) | Name of Google-managed certificate. Useful when migrating from Ingress-provisioned load balancer | `string` | `null` | no |
 | <a name="input_name"></a> [name](#input\_name) | Instance name | `string` | `"default_value"` | no |
 | <a name="input_neg_name"></a> [neg\_name](#input\_neg\_name) | Name of NEG to find in defined zone(s) | `string` | n/a | yes |

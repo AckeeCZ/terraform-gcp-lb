@@ -1,8 +1,8 @@
 variables:
   # renovate: datasource=docker depName=hashicorp/terraform
-  TERRAFORM_IMAGE: hashicorp/terraform:1.0.7
+  TERRAFORM_IMAGE: hashicorp/terraform:1.0.10
   MODULE_PIPELINE: "true"
 include:
   - project: Ackee/gitlab-ci-templates
-    ref: terraform/v1.7.0
+    ref: terraform/v1.9.0
     file: terraform/pipeline.yml

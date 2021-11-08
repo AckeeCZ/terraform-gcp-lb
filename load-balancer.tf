@@ -93,7 +93,7 @@ resource "google_compute_backend_service" "app_backend" {
   }
   log_config {
     enable      = true
-    sample_rate = 1
+    sample_rate = var.log_config_sample_rate
   }
 }
 
