@@ -154,3 +154,15 @@ variable "log_config_sample_rate" {
   description = "The value of the field must be in [0, 1]. This configures the sampling rate of requests to the load balancer where 1.0 means all logged requests are reported and 0.0 means no logged requests are reported. The default value is 1.0."
   default     = "1.0"
 }
+
+variable "create_logging_sink_bucket" {
+  type        = bool
+  description = "If true, creates bucket and set up logging sink"
+  default     = false
+}
+
+variable "logging_sink_bucket_retency" {
+  type        = number
+  description = "Number of days after which log files are deleted from bucket"
+  default     = 730
+}
