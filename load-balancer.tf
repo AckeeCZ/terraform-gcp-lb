@@ -74,6 +74,14 @@ resource "google_compute_health_check" "cn_lb" {
       host               = local.hc_host
     }
   }
+  dynamic "https_health_check" {
+    for_each = var.http_backend_protocol == "HTTPS" ? [1] : []
+    content {
+      port_specification = "USE_SERVING_PORT"
+      request_path       = var.health_check_request_path
+      host               = local.hc_host
+    }
+  }
 
 }
 

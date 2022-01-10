@@ -68,11 +68,11 @@ variable "http_backend_timeout" {
 
 variable "http_backend_protocol" {
   type        = string
-  description = "HTTP backend protocol, one of: HTTP/HTTP2"
+  description = "HTTP backend protocol, one of: HTTP/HTTP2/HTTPS"
   default     = "HTTP"
   validation {
-    condition     = can(regex("HTTP(2?)", var.http_backend_protocol))
-    error_message = "The http_backend_protocol value must be HTTP or HTTP2."
+    condition     = can(regex("HTTP(S|2)?", var.http_backend_protocol))
+    error_message = "The http_backend_protocol value must be HTTP,HTTP2 or HTTPS."
   }
 }
 
@@ -140,7 +140,6 @@ variable "health_check_host_header" {
   description = "Health header for health checks"
   default     = null
 }
-
 
 variable "certificate" {
   type        = string

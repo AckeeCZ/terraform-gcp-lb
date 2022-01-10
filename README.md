@@ -214,7 +214,7 @@ No modules.
 | <a name="input_health_check_request_path"></a> [health\_check\_request\_path](#input\_health\_check\_request\_path) | Health checked path (URN) | `string` | `"/healthz"` | no |
 | <a name="input_healthy_threshold"></a> [healthy\_threshold](#input\_healthy\_threshold) | A so-far unhealthy instance will be marked healthy after this many consecutive successes. The default value is 2. | `number` | `2` | no |
 | <a name="input_hostnames"></a> [hostnames](#input\_hostnames) | List of hostnames to route to backend created from named NEGs. Beware if you are using google\_managed\_tls - certificate will be created only for first entry in this list | `list(string)` | n/a | yes |
-| <a name="input_http_backend_protocol"></a> [http\_backend\_protocol](#input\_http\_backend\_protocol) | HTTP backend protocol, one of: HTTP/HTTP2 | `string` | `"HTTP"` | no |
+| <a name="input_http_backend_protocol"></a> [http\_backend\_protocol](#input\_http\_backend\_protocol) | HTTP backend protocol, one of: HTTP/HTTP2/HTTPS | `string` | `"HTTP"` | no |
 | <a name="input_http_backend_timeout"></a> [http\_backend\_timeout](#input\_http\_backend\_timeout) | Time of http request timeout (in seconds) | `string` | `"30"` | no |
 | <a name="input_keys_alg"></a> [keys\_alg](#input\_keys\_alg) | Algorithm used for private keys | `string` | `"RSA"` | no |
 | <a name="input_keys_valid_period"></a> [keys\_valid\_period](#input\_keys\_valid\_period) | Validation period of the self signed key | `number` | `29200` | no |
