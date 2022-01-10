@@ -4,6 +4,7 @@ locals {
   // this can be expanded to support other NEGs for migration purposes later
   backends                 = var.additional_negs != null ? concat(var.additional_negs, data.google_compute_network_endpoint_group.cn_lb) : data.google_compute_network_endpoint_group.cn_lb
   managed_certificate_name = var.managed_certificate_name != null ? var.managed_certificate_name : "${var.name}-cert-managed"
+  hc_host                  = var.health_check_host_header != null ? var.health_check_host_header : element(var.hostnames, 0)
 }
 
 data "google_compute_zones" "available" {
@@ -62,6 +63,7 @@ resource "google_compute_health_check" "cn_lb" {
     content {
       port_specification = "USE_SERVING_PORT"
       request_path       = var.health_check_request_path
+      host               = local.hc_host
     }
   }
   dynamic "http2_health_check" {
@@ -69,6 +71,7 @@ resource "google_compute_health_check" "cn_lb" {
     content {
       port_specification = "USE_SERVING_PORT"
       request_path       = var.health_check_request_path
+      host               = local.hc_host
     }
   }
 

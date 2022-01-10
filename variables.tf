@@ -135,6 +135,13 @@ variable "health_check_request_path" {
   default     = "/healthz"
 }
 
+variable "health_check_host_header" {
+  type        = string
+  description = "Health header for health checks"
+  default     = null
+}
+
+
 variable "certificate" {
   type        = string
   description = "The certificate in PEM format. The certificate chain must be no greater than 5 certs long. The chain must include at least one intermediate cert. Note: This property is sensitive and will not be displayed in the plan."
