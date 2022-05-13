@@ -166,3 +166,9 @@ variable "logging_sink_bucket_retency" {
   description = "Number of days after which log files are deleted from bucket"
   default     = 730
 }
+
+variable "mask_metrics_endpoint" {
+  type        = bool
+  description = "If set, requests /metrics will be sent to default backend"
+  default     = false
+}

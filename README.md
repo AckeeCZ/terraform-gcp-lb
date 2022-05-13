@@ -224,6 +224,7 @@ No modules.
 | <a name="input_log_config_sample_rate"></a> [log\_config\_sample\_rate](#input\_log\_config\_sample\_rate) | The value of the field must be in [0, 1]. This configures the sampling rate of requests to the load balancer where 1.0 means all logged requests are reported and 0.0 means no logged requests are reported. The default value is 1.0. | `string` | `"1.0"` | no |
 | <a name="input_logging_sink_bucket_retency"></a> [logging\_sink\_bucket\_retency](#input\_logging\_sink\_bucket\_retency) | Number of days after which log files are deleted from bucket | `number` | `730` | no |
 | <a name="input_managed_certificate_name"></a> [managed\_certificate\_name](#input\_managed\_certificate\_name) | Name of Google-managed certificate. Useful when migrating from Ingress-provisioned load balancer | `string` | `null` | no |
+| <a name="input_mask_metrics_endpoint"></a> [mask\_metrics\_endpoint](#input\_mask\_metrics\_endpoint) | If set, requests /metrics will be sent to default backend | `bool` | `false` | no |
 | <a name="input_name"></a> [name](#input\_name) | Instance name | `string` | `"default_value"` | no |
 | <a name="input_neg_name"></a> [neg\_name](#input\_neg\_name) | Name of NEG to find in defined zone(s) | `string` | n/a | yes |
 | <a name="input_private_key"></a> [private\_key](#input\_private\_key) | The write-only private key in PEM format. Note: This property is sensitive and will not be displayed in the plan. | `string` | `null` | no |

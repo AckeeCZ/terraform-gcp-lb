@@ -112,6 +112,16 @@ resource "google_compute_url_map" "cn_lb" {
   path_matcher {
     name            = "primary"
     default_service = google_compute_backend_service.app_backend.id
+
+    dynamic "path_rule" {
+      for_each = var.mask_metrics_endpoint ? [1] : []
+      content {
+        paths = [
+          "/metrics",
+        ]
+        service = google_compute_backend_bucket.cn_lb.id
+      }
+    }
   }
 }
 
