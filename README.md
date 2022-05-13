@@ -190,7 +190,10 @@ No modules.
 | [google_compute_target_https_proxy.google_managed](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_target_https_proxy) | resource |
 | [google_compute_target_https_proxy.self_signed](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_target_https_proxy) | resource |
 | [google_compute_url_map.cn_lb](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_url_map) | resource |
+| [google_logging_project_sink.log_archive_sink](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/logging_project_sink) | resource |
 | [google_storage_bucket.cn_lb](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket) | resource |
+| [google_storage_bucket.log_archive_sink](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket) | resource |
+| [google_storage_bucket_iam_binding.log_archive_sink_writer](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket_iam_binding) | resource |
 | [random_id.external_certificate](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) | resource |
 | [random_string.random_suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
 | [tls_private_key.web_lb_key](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
@@ -207,6 +210,7 @@ No modules.
 | <a name="input_backend_bucket_location"></a> [backend\_bucket\_location](#input\_backend\_bucket\_location) | GCS location(https://cloud.google.com/storage/docs/locations) of bucket where invalid requests are routed. | `string` | `"EUROPE-WEST3"` | no |
 | <a name="input_certificate"></a> [certificate](#input\_certificate) | The certificate in PEM format. The certificate chain must be no greater than 5 certs long. The chain must include at least one intermediate cert. Note: This property is sensitive and will not be displayed in the plan. | `string` | `null` | no |
 | <a name="input_check_interval_sec"></a> [check\_interval\_sec](#input\_check\_interval\_sec) | How often (in seconds) to send a health check. The default value is 5 seconds. | `number` | `5` | no |
+| <a name="input_create_logging_sink_bucket"></a> [create\_logging\_sink\_bucket](#input\_create\_logging\_sink\_bucket) | If true, creates bucket and set up logging sink | `bool` | `false` | no |
 | <a name="input_custom_health_check_ports"></a> [custom\_health\_check\_ports](#input\_custom\_health\_check\_ports) | Custom ports for GCE health checks, not needed unless your services are not in 30000-32767 or 3000, 5000 | `list(string)` | `[]` | no |
 | <a name="input_default_network_name"></a> [default\_network\_name](#input\_default\_network\_name) | Default firewall network name, used to place a default fw allowing google's default health checks. Leave blank if you use GKE ingress-provisioned LB (now deprecated) | `string` | `"default"` | no |
 | <a name="input_google_managed_tls"></a> [google\_managed\_tls](#input\_google\_managed\_tls) | If true, creates Google-managed TLS cert | `bool` | `false` | no |
@@ -218,6 +222,7 @@ No modules.
 | <a name="input_keys_alg"></a> [keys\_alg](#input\_keys\_alg) | Algorithm used for private keys | `string` | `"RSA"` | no |
 | <a name="input_keys_valid_period"></a> [keys\_valid\_period](#input\_keys\_valid\_period) | Validation period of the self signed key | `number` | `29200` | no |
 | <a name="input_log_config_sample_rate"></a> [log\_config\_sample\_rate](#input\_log\_config\_sample\_rate) | The value of the field must be in [0, 1]. This configures the sampling rate of requests to the load balancer where 1.0 means all logged requests are reported and 0.0 means no logged requests are reported. The default value is 1.0. | `string` | `"1.0"` | no |
+| <a name="input_logging_sink_bucket_retency"></a> [logging\_sink\_bucket\_retency](#input\_logging\_sink\_bucket\_retency) | Number of days after which log files are deleted from bucket | `number` | `730` | no |
 | <a name="input_managed_certificate_name"></a> [managed\_certificate\_name](#input\_managed\_certificate\_name) | Name of Google-managed certificate. Useful when migrating from Ingress-provisioned load balancer | `string` | `null` | no |
 | <a name="input_name"></a> [name](#input\_name) | Instance name | `string` | `"default_value"` | no |
 | <a name="input_neg_name"></a> [neg\_name](#input\_neg\_name) | Name of NEG to find in defined zone(s) | `string` | n/a | yes |
