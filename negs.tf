@@ -36,7 +36,10 @@ resource "google_compute_backend_service" "app_backend" {
   timeout_sec           = lookup(each.value, "http_backend_timeout", var.http_backend_timeout)
 
   dynamic "backend" {
-    for_each = [for i in local.endpoint_zone_groups : data.google_compute_network_endpoint_group.cn_lb[i] if split("␟", i)[0] == each.key]
+    for_each = concat(
+      [for i in local.endpoint_zone_groups : data.google_compute_network_endpoint_group.cn_lb[i] if split("␟", i)[0] == each.key],
+      lookup(each.value, "additional_negs", [])
+    )
     content {
       group          = backend.value.id
       balancing_mode = "RATE"

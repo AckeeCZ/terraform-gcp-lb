@@ -45,8 +45,11 @@ resource "tls_self_signed_cert" "web_lb_cert" {
       for i in var.services :
       compact(lookup(i, "hostnames", []))
     ]),
+    flatten([
+      for i in var.buckets :
+      compact(lookup(i, "hostnames", []))
+    ]),
   )
-
   lifecycle {
     ignore_changes = [
       subject
@@ -99,6 +102,10 @@ resource "google_compute_managed_ssl_certificate" "gcs_certs" {
       ]),
       flatten([
         for i in var.services :
+        compact(lookup(i, "hostnames", []))
+      ]),
+      flatten([
+        for i in var.buckets :
         compact(lookup(i, "hostnames", []))
       ]),
     )

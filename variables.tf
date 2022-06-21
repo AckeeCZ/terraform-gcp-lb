@@ -50,13 +50,20 @@ variable "default_network_name" {
   default     = "default"
 }
 
+variable "buckets" {
+  description = "Map of existing GCS buckets with related hostnames"
+  type        = map(any)
+  default     = {}
+}
+
 variable "negs" {
-  type    = map(any)
-  default = {}
+  description = "Map of existing Network Endpoint Groups with related hostnames"
+  type        = map(any)
+  default     = {}
 }
 
 variable "services" {
-  description = "Service map between service and load balancer NEG setup"
+  description = "Map of Cloud Run services"
   type        = map(any)
   default     = {}
 }

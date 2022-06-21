@@ -48,6 +48,13 @@ resource "google_compute_url_map" "cn_lb" {
       path_matcher = host_rule.key
     }
   }
+  dynamic "host_rule" {
+    for_each = var.buckets
+    content {
+      hosts        = lookup(host_rule.value, "hostnames", [])
+      path_matcher = host_rule.key
+    }
+  }
 
   dynamic "path_matcher" {
     for_each = var.negs
@@ -79,6 +86,13 @@ resource "google_compute_url_map" "cn_lb" {
           service = google_compute_backend_bucket.cn_lb.id
         }
       }
+    }
+  }
+  dynamic "path_matcher" {
+    for_each = var.buckets
+    content {
+      name            = path_matcher.key
+      default_service = google_compute_backend_bucket.bucket[path_matcher.key].id
     }
   }
 }
