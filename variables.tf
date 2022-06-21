@@ -50,14 +50,15 @@ variable "default_network_name" {
   default     = "default"
 }
 
-variable "neg_name" {
-  type        = string
-  description = "Name of NEG to find in defined zone(s)"
+variable "negs" {
+  type    = map(any)
+  default = {}
 }
 
-variable "additional_negs" {
-  description = "You can pass aditional data source objects of NEG's which will be added to load_balancer"
-  default     = null
+variable "services" {
+  description = "Service map between service and load balancer NEG setup"
+  type        = map(any)
+  default     = {}
 }
 
 variable "http_backend_timeout" {
@@ -74,11 +75,6 @@ variable "http_backend_protocol" {
     condition     = can(regex("HTTP(2?)", var.http_backend_protocol))
     error_message = "The http_backend_protocol value must be HTTP or HTTP2."
   }
-}
-
-variable "hostnames" {
-  type        = list(string)
-  description = "List of hostnames to route to backend created from named NEGs. Beware if you are using google_managed_tls - certificate will be created only for first entry in this list"
 }
 
 variable "backend_bucket_location" {
@@ -171,4 +167,28 @@ variable "mask_metrics_endpoint" {
   type        = bool
   description = "If set, requests /metrics will be sent to default backend"
   default     = false
+}
+
+variable "dont_use_dns_names_in_certificate" {
+  description = "Due to backward compatibility, TLS setup can omit setup of dns_names in self signed certificate"
+  type        = bool
+  default     = true
+}
+
+variable "iap_setup" {
+  description = "Service setup for IAP, overwrites default_iap_setup if used"
+  type = map(object({
+    oauth2_client_id     = string
+    oauth2_client_secret = string
+  }))
+  default = {}
+}
+
+variable "default_iap_setup" {
+  description = "In case you use the same IAP setup for all backends"
+  type = object({
+    oauth2_client_id     = string
+    oauth2_client_secret = string
+  })
+  default = null
 }
