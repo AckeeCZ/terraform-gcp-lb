@@ -15,7 +15,6 @@ resource "tls_private_key" "web_lb_key" {
 }
 
 resource "tls_self_signed_cert" "web_lb_cert" {
-  key_algorithm         = var.keys_alg
   private_key_pem       = tls_private_key.web_lb_key[0].private_key_pem
   validity_period_hours = var.keys_valid_period
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export GOOGLE_PROJECT=FILL-IT-YOURSELF1
+export GOOGLE_PROJECT=terraform-test-hejda
 export TF_VAR_namespace=stage
 export TF_VAR_region=europe-west3
 export TF_VAR_zone=europe-west3-c
