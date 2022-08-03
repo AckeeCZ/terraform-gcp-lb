@@ -35,6 +35,12 @@ resource "tls_self_signed_cert" "web_lb_cert" {
     postal_code         = "12345"
   }
   count = var.self_signed_tls ? 1 : 0
+
+  lifecycle {
+    ignore_changes = [
+      subject
+    ]
+  }
 }
 
 resource "random_id" "external_certificate" {
