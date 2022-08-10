@@ -179,7 +179,7 @@ variable "mask_metrics_endpoint" {
 variable "dont_use_dns_names_in_certificate" {
   description = "Due to backward compatibility, TLS setup can omit setup of dns_names in self signed certificate"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "iap_setup" {
