@@ -12,7 +12,7 @@ data "google_cloud_run_service" "cloud_run_service" {
 
 resource "google_compute_region_network_endpoint_group" "cloudrun_neg" {
   for_each              = var.services
-  name                  = each.key
+  name                  = "${each.key}-${local.random_suffix}"
   network_endpoint_type = "SERVERLESS"
   region                = lookup(each.value, "location", var.region)
   cloud_run {
