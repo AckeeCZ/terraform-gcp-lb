@@ -1,18 +1,3 @@
-locals {
-  random_suffix            = random_string.random_suffix.result
-  managed_certificate_name = var.managed_certificate_name != null ? var.managed_certificate_name : "${var.name}-cert-managed"
-  endpoint_zone_groups = toset([for i in flatten([
-    for k, v in var.negs :
-    concat([
-      for i in data.google_compute_zones.available :
-      [for j in i.names :
-      "${k}␟${j}"]
-    ], ["${k}␟${lookup(v, "zone", "")}"])
-    ]) :
-    i if length(split("␟", i)) == 2
-  ])
-}
-
 data "google_compute_zones" "available" {
   for_each = var.negs
   project  = var.project

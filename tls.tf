@@ -1,9 +1,3 @@
-resource "random_string" "random_suffix" {
-  length  = 8
-  special = false
-  upper   = false
-}
-
 resource "google_compute_global_address" "gca" {
   name    = var.name
   project = var.project

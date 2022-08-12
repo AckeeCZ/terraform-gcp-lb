@@ -1,9 +1,3 @@
-resource "random_string" "random" {
-  length  = 5
-  special = false
-  upper   = false
-}
-
 data "google_cloud_run_service" "cloud_run_service" {
   for_each = var.services
   name     = each.key
@@ -23,7 +17,7 @@ resource "google_compute_region_network_endpoint_group" "cloudrun_neg" {
 resource "google_compute_backend_service" "cloudrun" {
   provider = google-beta
   for_each = var.services
-  name     = "${each.key}-${random_string.random.result}"
+  name     = "${each.key}-${local.random_suffix}"
 
   protocol    = "HTTP"
   port_name   = "http"

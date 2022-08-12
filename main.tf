@@ -1,28 +1,28 @@
+locals {
+  random_suffix            = random_string.random_suffix.result
+  managed_certificate_name = var.managed_certificate_name != null ? var.managed_certificate_name : "${var.name}-cert-managed"
+  endpoint_zone_groups = toset([for i in flatten([
+    for k, v in var.negs :
+    concat([
+      for i in data.google_compute_zones.available :
+      [for j in i.names :
+      "${k}␟${j}"]
+    ], ["${k}␟${lookup(v, "zone", "")}"])
+    ]) :
+    i if length(split("␟", i)) == 2
+  ])
+}
+
+resource "random_string" "random_suffix" {
+  length  = 8
+  special = false
+  upper   = false
+}
+
 resource "google_compute_backend_bucket" "cn_lb" {
   name        = "${var.project}-l7-default-backend-${local.random_suffix}"
   bucket_name = google_storage_bucket.cn_lb.name
   enable_cdn  = true
-}
-
-resource "google_compute_firewall" "gcp_hc_ip_allow" {
-  name    = "gcp-healthchecks-ip-allow-${local.random_suffix}"
-  network = var.default_network_name
-
-  allow {
-    protocol = "tcp"
-    ports = concat(
-      ["30000-32767", "3000", "5000"],
-      var.custom_health_check_ports
-    )
-  }
-
-  target_tags = ["k8s"]
-
-  # GCP health check source ranges, see https://cloud.google.com/load-balancing/docs/health-checks
-  source_ranges = [
-    "130.211.0.0/22",
-    "35.191.0.0/16",
-  ]
 }
 
 resource "google_storage_bucket" "cn_lb" {
