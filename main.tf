@@ -1,87 +1,99 @@
+locals {
+  random_suffix            = random_string.random_suffix.result
+  managed_certificate_name = var.managed_certificate_name != null ? var.managed_certificate_name : "${var.name}-cert-managed"
+  endpoint_zone_groups = toset([for i in flatten([
+    for k, v in var.negs :
+    concat([
+      for i in data.google_compute_zones.available :
+      [for j in i.names :
+      "${k}␟${j}"]
+    ], ["${k}␟${lookup(v, "zone", "")}"])
+    ]) :
+    i if length(split("␟", i)) == 2
+  ])
+}
+
 resource "random_string" "random_suffix" {
   length  = 8
   special = false
   upper   = false
 }
 
-resource "google_compute_global_address" "gca" {
-  name    = var.name
-  project = var.project
+resource "google_compute_backend_bucket" "cn_lb" {
+  name        = "${var.project}-l7-default-backend-${local.random_suffix}"
+  bucket_name = google_storage_bucket.cn_lb.name
+  enable_cdn  = true
 }
 
-resource "tls_private_key" "web_lb_key" {
-  algorithm = var.keys_alg
-  count     = var.self_signed_tls ? 1 : 0
+resource "google_storage_bucket" "cn_lb" {
+  name     = "${var.project}-l7-default-backend-${local.random_suffix}"
+  location = var.backend_bucket_location
 }
 
-resource "tls_self_signed_cert" "web_lb_cert" {
-  private_key_pem       = tls_private_key.web_lb_key[0].private_key_pem
-  validity_period_hours = var.keys_valid_period
+resource "google_compute_url_map" "cn_lb" {
+  name            = "lb-${var.name}-${local.random_suffix}"
+  default_service = google_compute_backend_bucket.cn_lb.id
 
-  allowed_uses = [
-    "key_encipherment",
-    "digital_signature",
-    "server_auth",
-  ]
-
-  subject {
-    common_name         = google_compute_global_address.gca.address
-    organization        = "n/a"
-    organizational_unit = "n/a"
-    street_address      = ["n/a"]
-    locality            = "n/a"
-    province            = "CA"
-    country             = "US"
-    postal_code         = "12345"
+  dynamic "host_rule" {
+    for_each = var.negs
+    content {
+      hosts        = lookup(host_rule.value, "hostnames", [])
+      path_matcher = host_rule.key
+    }
   }
-  count = var.self_signed_tls ? 1 : 0
+  dynamic "host_rule" {
+    for_each = var.services
+    content {
+      hosts        = lookup(host_rule.value, "hostnames", [])
+      path_matcher = host_rule.key
+    }
+  }
+  dynamic "host_rule" {
+    for_each = var.buckets
+    content {
+      hosts        = lookup(host_rule.value, "hostnames", [])
+      path_matcher = host_rule.key
+    }
+  }
 
-  lifecycle {
-    ignore_changes = [
-      subject
-    ]
+  dynamic "path_matcher" {
+    for_each = var.negs
+    content {
+      name            = path_matcher.key
+      default_service = google_compute_backend_service.app_backend[path_matcher.key].id
+      dynamic "path_rule" {
+        for_each = var.mask_metrics_endpoint ? [1] : []
+        content {
+          paths = [
+            "/metrics",
+          ]
+          service = google_compute_backend_bucket.cn_lb.id
+        }
+      }
+    }
+  }
+  dynamic "path_matcher" {
+    for_each = var.services
+    content {
+      name            = path_matcher.key
+      default_service = google_compute_backend_service.cloudrun[path_matcher.key].id
+      dynamic "path_rule" {
+        for_each = var.mask_metrics_endpoint ? [1] : []
+        content {
+          paths = [
+            "/metrics",
+          ]
+          service = google_compute_backend_bucket.cn_lb.id
+        }
+      }
+    }
+  }
+  dynamic "path_matcher" {
+    for_each = var.buckets
+    content {
+      name            = path_matcher.key
+      default_service = google_compute_backend_bucket.bucket[path_matcher.key].id
+    }
   }
 }
 
-resource "random_id" "external_certificate" {
-  byte_length = 4
-  prefix      = "${var.name}-cert-external-signed"
-
-  # For security, do not expose raw certificate values in the output
-  keepers = {
-    private_key = sha256(var.private_key)
-    certificate = sha256(var.certificate)
-  }
-  count = var.certificate != null ? 1 : 0
-}
-
-resource "google_compute_ssl_certificate" "gcs_certs" {
-  name        = "${var.name}-cert-self-signed"
-  private_key = tls_private_key.web_lb_key[0].private_key_pem
-  certificate = tls_self_signed_cert.web_lb_cert[0].cert_pem
-
-  lifecycle {
-    create_before_destroy = true
-  }
-  count = var.self_signed_tls ? 1 : 0
-}
-
-resource "google_compute_ssl_certificate" "external_certs" {
-  name        = random_id.external_certificate[0].hex
-  private_key = var.private_key
-  certificate = var.certificate
-
-  lifecycle {
-    create_before_destroy = true
-  }
-  count = var.certificate != null ? 1 : 0
-}
-
-resource "google_compute_managed_ssl_certificate" "gcs_certs" {
-  name = local.managed_certificate_name
-
-  managed {
-    domains = [var.hostnames[0]]
-  }
-  count = var.google_managed_tls ? 1 : 0
-}
