@@ -9,7 +9,7 @@ locals {
       "${k}␟${j}"]
     ], ["${k}␟${lookup(v, "zone", "")}"])
     ]) :
-    i if length(split("␟", i)) == 2
+    i if split("␟", i)[1] != ""
   ])
 }
 
