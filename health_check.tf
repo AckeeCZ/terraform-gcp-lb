@@ -21,4 +21,11 @@ resource "google_compute_health_check" "cn_lb" {
       request_path       = lookup(each.value, "health_check_request_path", var.health_check_request_path)
     }
   }
+  dynamic "https_health_check" {
+    for_each = lookup(each.value, "http_backend_protocol", var.http_backend_protocol) == "HTTPS" ? [1] : []
+    content {
+      port_specification = "USE_SERVING_PORT"
+      request_path       = lookup(each.value, "health_check_request_path", var.health_check_request_path)
+    }
+  }
 }
