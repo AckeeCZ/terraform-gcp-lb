@@ -160,6 +160,57 @@ module "api_unicorn" {
 ```
 It is recommended to use some secure storage (eg. Vault) and pass value from here, rather then saving plaintext private key into git repo
 
+# Pitfalls
+
+## Error: Error creating SslCertificate: googleapi: Error 409: The resource ... already exists, alreadyExists
+
+This might show once you are adding new hostname to the load balancer and SSL certificate `web_lb_cert` needs to add the hostname into `dns_names`. Terraform is trying to update the certificate in-place or creates a certificate with the same name. For that, you might want to do these few steps manually:
+
+Get certificates from the state file:
+
+```bash
+CERT=`mktemp`
+CERT_KEY=`mktemp`
+
+terraform show -json | jq -r --arg MODULE "$MODULE" '.values.root_module.child_modules[] | select (.address=="module.lb_72541") | .resources[] | select(.address=="module.lb_72541.google_compute_ssl_certificate.gcs_certs[0]") | .values.private_key' > $CERT_KEY
+terraform show -json | jq -r --arg MODULE "$MODULE" '.values.root_module.child_modules[] | select (.address=="module.lb_72541") | .resources[] | select(.address=="module.lb_72541.google_compute_ssl_certificate.gcs_certs[0]") | .values.certificate' > $CERT
+```
+
+where `module.lb_72541` is the name of the module used in your Terraform.
+
+Create new temporary certificate:
+
+```bash
+gcloud compute ssl-certificates create tmp --certificate=$CERT --private-key=$CERT_KEY
+gcloud compute target-https-proxies update "NAME_OF_PROXY" --ssl-certificates "tmp"
+```
+
+The name of the https proxy can be found in the state file:
+
+```bash
+terraform state show 'module.lb_72541.google_compute_target_https_proxy.self_signed[0]'
+```
+
+Remove the old certificate:
+
+Get the name from the error output. Let's say you have this error:
+
+```
+Error: Error creating SslCertificate: googleapi: Error 409: The resource 'projects/awesome-project/global/sslCertificates/main-awesome-project-development-72541-cert-self-signed' already exists, alreadyExists
+```
+
+Then command will look like this:
+
+```bash
+gcloud compute ssl-certificates delete main-awesome-project-development-72541-cert-self-signed
+```
+
+Run `terraform apply` to create a certificate from Terraform and once done delete the temporary certificate:
+
+```bash
+gcloud compute ssl-certificates delete tmp
+```
+
 ## Creation of NEG's is not automatic!
 
 **BEWARE: Network Endpoint Groups REFERENCED BY THIS MODULE MUST EXIST BEFORE YOU USE THIS MODULE, OTHERWISE IT WILL FAIL WITH ERROR SIMILIAR TO:**
