@@ -14,7 +14,7 @@ locals {
 }
 
 resource "random_string" "random_suffix" {
-  length  = 8
+  length  = var.random_suffix_size
   special = false
   upper   = false
 }
@@ -31,7 +31,7 @@ resource "google_storage_bucket" "cn_lb" {
 }
 
 resource "google_compute_url_map" "cn_lb" {
-  name            = "lb-${var.name}-${local.random_suffix}"
+  name            = var.custom_url_map_name == "" ? "lb-${var.name}-${local.random_suffix}" : var.custom_url_map_name
   default_service = google_compute_backend_bucket.cn_lb.id
 
   dynamic "host_rule" {
@@ -70,6 +70,13 @@ resource "google_compute_url_map" "cn_lb" {
           service = google_compute_backend_bucket.cn_lb.id
         }
       }
+      dynamic "path_rule" {
+        for_each = length(lookup(path_matcher.value, "paths", [])) > 0 ? [1] : []
+        content {
+          paths   = lookup(path_matcher.value, "paths", [])
+          service = google_compute_backend_service.app_backend[path_matcher.key].id
+        }
+      }
     }
   }
   dynamic "path_matcher" {
@@ -86,6 +93,13 @@ resource "google_compute_url_map" "cn_lb" {
           service = google_compute_backend_bucket.cn_lb.id
         }
       }
+      dynamic "path_rule" {
+        for_each = length(lookup(path_matcher.value, "paths", [])) > 0 ? [1] : []
+        content {
+          paths   = lookup(path_matcher.value, "paths", [])
+          service = google_compute_backend_service.cloudrun[path_matcher.key].id
+        }
+      }
     }
   }
   dynamic "path_matcher" {
@@ -93,6 +107,13 @@ resource "google_compute_url_map" "cn_lb" {
     content {
       name            = path_matcher.key
       default_service = google_compute_backend_bucket.bucket[path_matcher.key].id
+      dynamic "path_rule" {
+        for_each = length(lookup(path_matcher.value, "paths", [])) > 0 ? [1] : []
+        content {
+          paths   = lookup(path_matcher.value, "paths", [])
+          service = google_compute_backend_service.bucket[path_matcher.key].id
+        }
+      }
     }
   }
 }

@@ -86,7 +86,18 @@ data "google_iam_policy" "noauth" {
 }
 
 resource "google_cloud_run_service_iam_policy" "noauth" {
-  for_each    = toset([google_cloud_run_service.default_one, google_cloud_run_service.default_two])
+  for_each = {
+    "one" : {
+      "location" : google_cloud_run_service.default_one.location,
+      "project" : google_cloud_run_service.default_one.project,
+      "name" : google_cloud_run_service.default_one.name,
+    },
+    "two" : {
+      "location" : google_cloud_run_service.default_two.location,
+      "project" : google_cloud_run_service.default_two.project,
+      "name" : google_cloud_run_service.default_two.name,
+    }
+  }
   location    = each.value.location
   project     = each.value.project
   service     = each.value.name
@@ -103,10 +114,12 @@ module "api_unicorn" {
   negs = {
     ackee-api-unicorn-one : {
       hostnames = ["api-unicorn-1.ackee.cz"]
+      paths     = []
       zone      = var.zone
     }
     ackee-api-unicorn-two : {
       hostnames = ["api-unicorn-2.ackee.cz"]
+      paths     = ["/api/v1/*"]
       zone      = var.zone
     }
   }

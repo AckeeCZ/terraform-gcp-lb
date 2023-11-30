@@ -199,3 +199,33 @@ variable "default_iap_setup" {
   })
   default = null
 }
+
+variable "random_suffix_size" {
+  description = "Size of random suffix"
+  type        = number
+  default     = 8
+}
+
+variable "custom_url_map_name" {
+  description = "Custom name for URL map name used instead of lb-var.name"
+  type        = string
+  default     = ""
+}
+
+variable "custom_target_http_proxy_name" {
+  description = "Custom name for HTTP proxy name used instead of non-tls-proxy-"
+  type        = string
+  default     = ""
+}
+
+variable "use_random_postfix_for_network_endpoint_group" {
+  description = "If true, uses random postfix for NEG name"
+  type        = bool
+  default     = true
+}
+
+variable "non_tls_global_forwarding_rule_name" {
+  description = "Global non tls forwarding rule name, if set, changes name of non-tls forwarding rule"
+  type        = string
+  default     = ""
+}

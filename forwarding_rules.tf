@@ -58,13 +58,13 @@ resource "google_compute_global_forwarding_rule" "external_signed" {
 // Non-TLS load balancer
 
 resource "google_compute_target_http_proxy" "non_tls" {
-  name    = "non-tls-proxy-${local.random_suffix}"
+  name    = var.custom_target_http_proxy_name == "" ? "non-tls-proxy-${local.random_suffix}" : var.custom_target_http_proxy_name
   url_map = google_compute_url_map.cn_lb.id
   count   = var.allow_non_tls_frontend ? 1 : 0
 }
 
 resource "google_compute_global_forwarding_rule" "non_tls" {
-  name       = "non-tls-fw-rule-${local.random_suffix}"
+  name       = var.non_tls_global_forwarding_rule_name == "" ? "non-tls-fw-rule-${local.random_suffix}" : "${var.non_tls_global_forwarding_rule_name}"
   target     = google_compute_target_http_proxy.non_tls[0].id
   ip_address = google_compute_global_address.gca.address
   port_range = "80"
