@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - support for paths
 - random suffix size to easy migrations
-- add custom_url_map_name, custom_target_http_proxy_custom_url_map_name, use_random_postfix_for_network_endpoint_group, global_forwarding_rule_name to easy migrations
+- add `custom_url_map_name`, `custom_target_http_proxy_custom_url_map_name`, `use_random_postfix_for_network_endpoint_group`, `global_forwarding_rule_name` to easy migrations
+- add `service_name` override for Cloud Run backend in case the Cloud Run service name is already used
 
 ## [v5.1.0] - 2022-08-21
 ### Added

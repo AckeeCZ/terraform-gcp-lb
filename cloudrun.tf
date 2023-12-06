@@ -1,6 +1,6 @@
 data "google_cloud_run_service" "cloud_run_service" {
   for_each = var.services
-  name     = each.key
+  name     = lookup(each.value, "service_name", each.key)
   location = lookup(each.value, "location", var.region)
 }
 
