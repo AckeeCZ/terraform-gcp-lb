@@ -50,24 +50,36 @@ variable "default_network_name" {
   default     = "default"
 }
 
-variable "buckets" {
-  description = "Map of existing GCS buckets with related hostnames"
-  type        = map(any)
-  default     = {}
-}
-
-variable "negs" {
-  description = "Map of existing Network Endpoint Groups with related hostnames"
-  type        = map(any)
-  default     = {}
-}
-
 variable "services" {
-  description = "Map of Cloud Run services"
-  type        = map(any)
-  default     = {}
+  type = list(object({
+    name                      = string
+    type                      = string
+    bucket_name               = optional(string)
+    location                  = optional(string)
+    zone                      = optional(string)
+    additional_negs           = optional(list(string))
+    timeout_sec               = optional(number)
+    check_interval_sec        = optional(number)
+    healthy_threshold         = optional(number)
+    unhealthy_threshold       = optional(number)
+    http_backend_protocol     = optional(string)
+    http_backend_timeout      = optional(string)
+    health_check_request_path = optional(string)
+    enable_cdn                = optional(bool)
+  }))
+  description = "List of services: cloudrun, neg, bucket, ... to be used in the map"
 }
-
+variable "url_map" {
+  type = map(object({
+    hostnames       = list(string)
+    default_service = string
+    path_rules = optional(list(object({
+      paths   = list(string)
+      service = string
+    })))
+  }))
+  description = "Url map setup"
+}
 variable "http_backend_timeout" {
   type        = string
   description = "Time of http request timeout (in seconds)"
@@ -218,8 +230,8 @@ variable "custom_target_http_proxy_name" {
   default     = ""
 }
 
-variable "use_random_postfix_for_network_endpoint_group" {
-  description = "If true, uses random postfix for NEG name"
+variable "use_random_suffix_for_network_endpoint_group" {
+  description = "If true, uses random suffix for NEG name"
   type        = bool
   default     = true
 }

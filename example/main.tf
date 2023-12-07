@@ -104,6 +104,10 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
   policy_data = data.google_iam_policy.noauth.policy_data
 }
 
+# There are issues with uknown resources before apply, run:
+#  terraform apply -target=google_compute_network.neg_test -target=google_compute_network_endpoint_group.neg_one -target=google_compute_network_endpoint_group.neg_two -target=google_compute_subnetwork.neg_test
+# to avoid them
+
 module "api_unicorn" {
   source                 = "../"
   name                   = "api-unicorn"
@@ -111,26 +115,63 @@ module "api_unicorn" {
   region                 = var.region
   google_managed_tls     = true
   log_config_sample_rate = "0.5"
-  negs = {
-    ackee-api-unicorn-one : {
-      hostnames = ["api-unicorn-1.ackee.cz"]
-      paths     = []
-      zone      = var.zone
+  services = [
+    {
+      type     = "cloudrun"
+      name     = "cloudrun-srv-tst-one"
+      location = var.region
+    },
+    {
+      type     = "cloudrun"
+      name     = "cloudrun-srv-tst-two"
+      location = var.region
+    },
+    {
+      type = "neg"
+      name = "ackee-api-unicorn-one"
+      zone = var.zone
+    },
+    {
+      type = "neg"
+      name = "ackee-api-unicorn-two"
+      zone = var.zone
     }
-    ackee-api-unicorn-two : {
-      hostnames = ["api-unicorn-2.ackee.cz"]
-      paths     = ["/api/v1/*"]
-      zone      = var.zone
-    }
-  }
-  services = {
-    cloudrun-srv-tst-one = {
+  ]
+  url_map = {
+    matcher1 = {
       hostnames = ["cloud-run-test-1.ack.ee"]
-      location  = var.region
+      path_rules = [
+        {
+          paths   = ["/api/v1/*"]
+          service = "ackee-api-unicorn-one"
+        },
+        {
+          paths   = ["/api/v2/*"]
+          service = "cloudrun-srv-tst-two"
+
+        }
+      ]
+      default_service = "cloudrun-srv-tst-two"
     }
-    cloudrun-srv-tst-two = {
-      hostnames = ["cloud-run-test-2.ack.ee"]
-      location  = var.region
+    matcher2 = {
+      hostnames = ["api-unicorn-1.ackee.cz"]
+      path_rules = [
+        {
+          paths   = ["/*"]
+          service = "ackee-api-unicorn-one"
+        },
+      ]
+      default_service = "ackee-api-unicorn-two"
+    }
+    matcher3 = {
+      hostnames = ["api-unicorn-2.ackee.cz"]
+      path_rules = [
+        {
+          paths   = ["/*"]
+          service = "ackee-api-unicorn-two"
+        },
+      ]
+      default_service = "ackee-api-unicorn-two"
     }
   }
   depends_on = [

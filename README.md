@@ -28,21 +28,54 @@ module "api_unicorn" {
   project         = var.project
   region          = var.region
   self_signed_tls = true
-  negs = {
-    "ackee-api-unicorn" : {
-      hostnames             = ["api-unicorn.ackee.cz", "api-unicorn2.ackee.cz"]
-      zone                  = var.zone
-      http_backend_protocol = "HTTP"
+
+  services = [
+    {
+      type = "neg"
+      name = "ackee-api-unicorn"
+      zone = var.zone
+    },
+    {
+      type        = "bucket"
+      bucket_name = "${google_storage_bucket.test.name}"
+    },
+    {
+      type         = "cloudrun"
+      service_name = cloud-run-service
     }
-  }
-  buckets = {
-    "${google_storage_bucket.test.name}" : {
-      hostnames             = ["test.ackee.cz"]
+  ]
+
+  url_map = {
+    matcher1 = {
+      hostnames  = ["api-unicorn.ackee.cz", "api-unicorn2.ackee.cz"]
+      path_rules = [
+        {
+          paths = ["/api/v1/*"]
+          service = {
+            type = "neg"
+            name = "ackee-api-unicorn"
+            zone = var.zone
+          }
+        },
+      ]
     }
-  }
-  services = {
-    cloud-run-service = {
-      hostnames = ["cloud-run-service.ackee.cz"]
+    matcher2 = {
+      hostnames  = ["api-unicorn.ackee.cz", "api-unicorn2.ackee.cz"]
+      path_rules = [
+        {
+          paths   = ["/*"]
+          service = "${google_storage_bucket.test.name}"
+        },
+      ]
+    }
+    matcher3 = {
+      hostnames  = ["cloud-run-service.ackee.cz"]
+      path_rules = [
+        {
+          paths   = ["/*"]
+          service = "cloud-run-service"
+        },
+      ]
     }
   }
 }
@@ -73,11 +106,24 @@ module "api_unicorn" {
   project            = var.project
   region             = var.region
   google_managed_tls = true
-  negs = {
-    "ackee-api-unicorn" : {
-      hostnames             = ["api-unicorn.ackee.cz"]
-      zone                  = var.zone
-      http_backend_protocol = "HTTP"
+
+  services = [
+    {
+      type = "neg"
+      name = "ackee-api-unicorn"
+      zone = var.zone
+    },
+  ]
+
+  url_map = {
+    matcher1 = {
+      hostnames  = ["api-unicorn.ackee.cz", "api-unicorn2.ackee.cz"]
+      path_rules = [
+        {
+          paths = ["/api/v1/*"]
+          service = "ackee-api-unicorn"
+        },
+      ]
     }
   }
 }
@@ -115,12 +161,26 @@ module "api_unicorn" {
   project            = var.project
   region             = var.region
   google_managed_tls = true
-  negs = {
-    "ackee-api-unicorn" : {
-      hostnames             = ["api-unicorn.ackee.cz"]
-      additional_negs       = [data.google_compute_network_endpoint_group.old_neg]
+
+  services = [
+    {
+      type                  = "neg"
+      name                  = "ackee-api-unicorn"
       zone                  = var.zone
+      additional_negs       = [data.google_compute_network_endpoint_group.old_neg]
       http_backend_protocol = "HTTP"
+    },
+  ]
+
+  url_map = {
+    matcher1 = {
+      hostnames  = ["api-unicorn.ackee.cz""]
+      path_rules = [
+        {
+          paths   = ["/*"]
+          service = "ackee-api-unicorn"
+        },
+      ]
     }
   }
 }
@@ -146,14 +206,29 @@ module "api_unicorn" {
   name               = "main-${var.project}-${var.namespace}"
   project            = var.project
   region             = var.region
-  negs = {
-    "ackee-api-unicorn" : {
-      hostnames             = ["api-unicorn.ackee.cz"]
-      additional_negs       = [data.google_compute_network_endpoint_group.old_neg]
+
+  services = [
+    {
+      type                  = "neg"
+      name                  = "ackee-api-unicorn"
       zone                  = var.zone
+      additional_negs       = [data.google_compute_network_endpoint_group.old_neg]
       http_backend_protocol = "HTTP"
+    },
+  ]
+
+  url_map = {
+    matcher1 = {
+      hostnames  = ["api-unicorn.ackee.cz""]
+      path_rules = [
+        {
+          paths   = ["/*"]
+          service = "ackee-api-unicorn"
+        },
+      ]
     }
   }
+
   certificate = file("${path.root}/tls/certificate_chain.crt")
   private_key = file("${path.root}/tls/private.key")
 }
@@ -251,10 +326,10 @@ pre-commit install
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | n/a |
-| <a name="provider_google-beta"></a> [google-beta](#provider\_google-beta) | n/a |
-| <a name="provider_random"></a> [random](#provider\_random) | n/a |
-| <a name="provider_tls"></a> [tls](#provider\_tls) | n/a |
+| <a name="provider_google"></a> [google](#provider\_google) | 5.8.0 |
+| <a name="provider_google-beta"></a> [google-beta](#provider\_google-beta) | 5.8.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.6.0 |
+| <a name="provider_tls"></a> [tls](#provider\_tls) | 4.0.5 |
 
 ## Modules
 
@@ -302,11 +377,12 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_allow_non_tls_frontend"></a> [allow\_non\_tls\_frontend](#input\_allow\_non\_tls\_frontend) | If true, enables port 80 frontend - creates non-TLS (http://) variant of LB | `string` | `false` | no |
 | <a name="input_backend_bucket_location"></a> [backend\_bucket\_location](#input\_backend\_bucket\_location) | GCS location(https://cloud.google.com/storage/docs/locations) of bucket where invalid requests are routed. | `string` | `"EUROPE-WEST3"` | no |
-| <a name="input_buckets"></a> [buckets](#input\_buckets) | Map of existing GCS buckets with related hostnames | `map(any)` | `{}` | no |
 | <a name="input_certificate"></a> [certificate](#input\_certificate) | The certificate in PEM format. The certificate chain must be no greater than 5 certs long. The chain must include at least one intermediate cert. Note: This property is sensitive and will not be displayed in the plan. | `string` | `null` | no |
 | <a name="input_check_interval_sec"></a> [check\_interval\_sec](#input\_check\_interval\_sec) | How often (in seconds) to send a health check. The default value is 5 seconds. | `number` | `5` | no |
 | <a name="input_create_logging_sink_bucket"></a> [create\_logging\_sink\_bucket](#input\_create\_logging\_sink\_bucket) | If true, creates bucket and set up logging sink | `bool` | `false` | no |
 | <a name="input_custom_health_check_ports"></a> [custom\_health\_check\_ports](#input\_custom\_health\_check\_ports) | Custom ports for GCE health checks, not needed unless your services are not in 30000-32767 or 3000, 5000 | `list(string)` | `[]` | no |
+| <a name="input_custom_target_http_proxy_name"></a> [custom\_target\_http\_proxy\_name](#input\_custom\_target\_http\_proxy\_name) | Custom name for HTTP proxy name used instead of non-tls-proxy- | `string` | `""` | no |
+| <a name="input_custom_url_map_name"></a> [custom\_url\_map\_name](#input\_custom\_url\_map\_name) | Custom name for URL map name used instead of lb-var.name | `string` | `""` | no |
 | <a name="input_default_iap_setup"></a> [default\_iap\_setup](#input\_default\_iap\_setup) | In case you use the same IAP setup for all backends | <pre>object({<br>    oauth2_client_id     = string<br>    oauth2_client_secret = string<br>  })</pre> | `null` | no |
 | <a name="input_default_network_name"></a> [default\_network\_name](#input\_default\_network\_name) | Default firewall network name, used to place a default fw allowing google's default health checks. Leave blank if you use GKE ingress-provisioned LB (now deprecated) | `string` | `"default"` | no |
 | <a name="input_dont_use_dns_names_in_certificate"></a> [dont\_use\_dns\_names\_in\_certificate](#input\_dont\_use\_dns\_names\_in\_certificate) | Due to backward compatibility, TLS setup can omit setup of dns\_names in self signed certificate | `bool` | `false` | no |
@@ -323,14 +399,17 @@ No modules.
 | <a name="input_managed_certificate_name"></a> [managed\_certificate\_name](#input\_managed\_certificate\_name) | Name of Google-managed certificate. Useful when migrating from Ingress-provisioned load balancer | `string` | `null` | no |
 | <a name="input_mask_metrics_endpoint"></a> [mask\_metrics\_endpoint](#input\_mask\_metrics\_endpoint) | If set, requests /metrics will be sent to default backend | `bool` | `false` | no |
 | <a name="input_name"></a> [name](#input\_name) | Instance name | `string` | `"default_value"` | no |
-| <a name="input_negs"></a> [negs](#input\_negs) | Map of existing Network Endpoint Groups with related hostnames | `map(any)` | `{}` | no |
+| <a name="input_non_tls_global_forwarding_rule_name"></a> [non\_tls\_global\_forwarding\_rule\_name](#input\_non\_tls\_global\_forwarding\_rule\_name) | Global non tls forwarding rule name, if set, changes name of non-tls forwarding rule | `string` | `""` | no |
 | <a name="input_private_key"></a> [private\_key](#input\_private\_key) | The write-only private key in PEM format. Note: This property is sensitive and will not be displayed in the plan. | `string` | `null` | no |
 | <a name="input_project"></a> [project](#input\_project) | Project ID | `string` | n/a | yes |
+| <a name="input_random_suffix_size"></a> [random\_suffix\_size](#input\_random\_suffix\_size) | Size of random suffix | `number` | `8` | no |
 | <a name="input_region"></a> [region](#input\_region) | GCP region where we will look for NEGs | `string` | n/a | yes |
 | <a name="input_self_signed_tls"></a> [self\_signed\_tls](#input\_self\_signed\_tls) | If true, creates self-signed TLS cert | `bool` | `false` | no |
-| <a name="input_services"></a> [services](#input\_services) | Map of Cloud Run services | `map(any)` | `{}` | no |
+| <a name="input_services"></a> [services](#input\_services) | List of services: cloudrun, neg, bucket, ... to be used in the map | <pre>list(object({<br>    name                      = string<br>    type                      = string<br>    bucket_name               = optional(string)<br>    location                  = optional(string)<br>    zone                      = optional(string)<br>    additional_negs           = optional(list(string))<br>    timeout_sec               = optional(number)<br>    check_interval_sec        = optional(number)<br>    healthy_threshold         = optional(number)<br>    unhealthy_threshold       = optional(number)<br>    http_backend_protocol     = optional(string)<br>    http_backend_timeout      = optional(string)<br>    health_check_request_path = optional(string)<br>    enable_cdn                = optional(bool)<br>  }))</pre> | n/a | yes |
 | <a name="input_timeout_sec"></a> [timeout\_sec](#input\_timeout\_sec) | How long (in seconds) to wait before claiming failure. The default value is 5 seconds. It is invalid for timeout\_sec to have greater value than check\_interval\_sec. | `number` | `5` | no |
 | <a name="input_unhealthy_threshold"></a> [unhealthy\_threshold](#input\_unhealthy\_threshold) | A so-far healthy instance will be marked unhealthy after this many consecutive failures. The default value is 2. | `number` | `2` | no |
+| <a name="input_url_map"></a> [url\_map](#input\_url\_map) | Url map setup | <pre>map(object({<br>    hostnames       = list(string)<br>    default_service = string<br>    path_rules = optional(list(object({<br>      paths   = list(string)<br>      service = string<br>    })))<br>  }))</pre> | n/a | yes |
+| <a name="input_use_random_suffix_for_network_endpoint_group"></a> [use\_random\_suffix\_for\_network\_endpoint\_group](#input\_use\_random\_suffix\_for\_network\_endpoint\_group) | If true, uses random suffix for NEG name | `bool` | `true` | no |
 | <a name="input_zone"></a> [zone](#input\_zone) | GCP zone where we will look for NEGs - optional parameter, if not set, the we will automatically search in all zones in region | `string` | `null` | no |
 
 ## Outputs

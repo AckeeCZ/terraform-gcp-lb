@@ -1,5 +1,5 @@
 data "google_compute_zones" "available" {
-  for_each = var.negs
+  for_each = local.negs
   project  = var.project
   region   = lookup(each.value, "zone", var.region)
 }
@@ -11,7 +11,7 @@ data "google_compute_network_endpoint_group" "cn_lb" {
 }
 
 resource "google_compute_backend_service" "app_backend" {
-  for_each = var.negs
+  for_each = local.negs
   provider = google-beta
 
   name                  = "${each.key}-${local.random_suffix}"
@@ -21,9 +21,10 @@ resource "google_compute_backend_service" "app_backend" {
   timeout_sec           = lookup(each.value, "http_backend_timeout", var.http_backend_timeout)
 
   dynamic "backend" {
-    for_each = concat(
-      [for i in local.endpoint_zone_groups : data.google_compute_network_endpoint_group.cn_lb[i] if split("␟", i)[0] == each.key],
-      lookup(each.value, "additional_negs", [])
+    for_each = concat([
+      for i in local.endpoint_zone_groups : data.google_compute_network_endpoint_group.cn_lb[i] if split("␟", i)[0] == each.key
+      ],
+      lookup(each.value, "additional_backends", [])
     )
     content {
       group          = backend.value.id
