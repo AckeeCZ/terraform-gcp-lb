@@ -1,14 +1,14 @@
 data "google_cloud_run_service" "cloud_run_service" {
-  for_each = var.services
-  name     = each.key
-  location = lookup(each.value, "location", var.region)
+  for_each = local.services
+  name     = each.value.name == null ? var.region : each.value.name
+  location = each.value.location == null ? var.region : each.value.location
 }
 
 resource "google_compute_region_network_endpoint_group" "cloudrun_neg" {
-  for_each              = var.services
-  name                  = "${each.key}-${local.random_suffix}"
+  for_each              = local.services
+  name                  = var.use_random_suffix_for_network_endpoint_group ? "${each.key}-${local.random_suffix}" : each.key
   network_endpoint_type = "SERVERLESS"
-  region                = lookup(each.value, "location", var.region)
+  region                = each.value.location == null ? var.region : each.value.location
   cloud_run {
     service = data.google_cloud_run_service.cloud_run_service[each.key].name
   }
@@ -16,7 +16,7 @@ resource "google_compute_region_network_endpoint_group" "cloudrun_neg" {
 
 resource "google_compute_backend_service" "cloudrun" {
   provider = google-beta
-  for_each = var.services
+  for_each = local.services
   name     = "${each.key}-${local.random_suffix}"
 
   protocol    = "HTTP"

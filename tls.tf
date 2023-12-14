@@ -30,20 +30,10 @@ resource "tls_self_signed_cert" "web_lb_cert" {
   }
   count = var.self_signed_tls ? 1 : 0
 
-  dns_names = var.dont_use_dns_names_in_certificate == true ? [] : concat(
-    flatten([
-      for i in var.negs :
-      compact(lookup(i, "hostnames", []))
-    ]),
-    flatten([
-      for i in var.services :
-      compact(lookup(i, "hostnames", []))
-    ]),
-    flatten([
-      for i in var.buckets :
-      compact(lookup(i, "hostnames", []))
-    ]),
-  )
+  dns_names = var.dont_use_dns_names_in_certificate == true ? [] : flatten([
+    for _, v in var.url_map : v.hostnames
+  ])
+
   lifecycle {
     ignore_changes = [
       subject
@@ -89,20 +79,9 @@ resource "google_compute_managed_ssl_certificate" "gcs_certs" {
   name = local.managed_certificate_name
 
   managed {
-    domains = concat(
-      flatten([
-        for i in var.negs :
-        compact(lookup(i, "hostnames", []))
-      ]),
-      flatten([
-        for i in var.services :
-        compact(lookup(i, "hostnames", []))
-      ]),
-      flatten([
-        for i in var.buckets :
-        compact(lookup(i, "hostnames", []))
-      ]),
-    )
+    domains = flatten([
+      for _, v in var.url_map : v.hostnames
+    ])
   }
   count = var.google_managed_tls ? 1 : 0
 }

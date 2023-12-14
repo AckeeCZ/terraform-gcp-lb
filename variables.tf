@@ -50,24 +50,36 @@ variable "default_network_name" {
   default     = "default"
 }
 
-variable "buckets" {
-  description = "Map of existing GCS buckets with related hostnames"
-  type        = map(any)
-  default     = {}
-}
-
-variable "negs" {
-  description = "Map of existing Network Endpoint Groups with related hostnames"
-  type        = map(any)
-  default     = {}
-}
-
 variable "services" {
-  description = "Map of Cloud Run services"
-  type        = map(any)
-  default     = {}
+  type = list(object({
+    name                      = string
+    type                      = string
+    bucket_name               = optional(string)
+    location                  = optional(string)
+    zone                      = optional(string)
+    additional_negs           = optional(list(string))
+    timeout_sec               = optional(number)
+    check_interval_sec        = optional(number)
+    healthy_threshold         = optional(number)
+    unhealthy_threshold       = optional(number)
+    http_backend_protocol     = optional(string)
+    http_backend_timeout      = optional(string)
+    health_check_request_path = optional(string)
+    enable_cdn                = optional(bool)
+  }))
+  description = "List of services: cloudrun, neg, bucket, ... to be used in the map"
 }
-
+variable "url_map" {
+  type = map(object({
+    hostnames       = list(string)
+    default_service = string
+    path_rules = optional(list(object({
+      paths   = list(string)
+      service = string
+    })))
+  }))
+  description = "Url map setup"
+}
 variable "http_backend_timeout" {
   type        = string
   description = "Time of http request timeout (in seconds)"
@@ -198,4 +210,34 @@ variable "default_iap_setup" {
     oauth2_client_secret = string
   })
   default = null
+}
+
+variable "random_suffix_size" {
+  description = "Size of random suffix"
+  type        = number
+  default     = 8
+}
+
+variable "custom_url_map_name" {
+  description = "Custom name for URL map name used instead of lb-var.name"
+  type        = string
+  default     = ""
+}
+
+variable "custom_target_http_proxy_name" {
+  description = "Custom name for HTTP proxy name used instead of non-tls-proxy-"
+  type        = string
+  default     = ""
+}
+
+variable "use_random_suffix_for_network_endpoint_group" {
+  description = "If true, uses random suffix for NEG name"
+  type        = bool
+  default     = true
+}
+
+variable "non_tls_global_forwarding_rule_name" {
+  description = "Global non tls forwarding rule name, if set, changes name of non-tls forwarding rule"
+  type        = string
+  default     = ""
 }
