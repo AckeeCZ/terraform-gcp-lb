@@ -1,3 +1,19 @@
+locals {
+  negs = {
+    for item in var.services : item.name => item if item.type == "neg"
+  }
+  endpoint_zone_groups = toset([for i in flatten([
+    for k, v in local.negs :
+    concat([
+      for i in data.google_compute_zones.available :
+      [for j in i.names :
+      "${k}␟${j}"]
+    ], ["${k}␟${lookup(v, "zone", "")}"])
+    ]) :
+    i if split("␟", i)[1] != ""
+  ])
+}
+
 data "google_compute_zones" "available" {
   for_each = local.negs
   project  = var.project

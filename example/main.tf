@@ -105,7 +105,7 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
 }
 
 # There are issues with uknown resources before apply, run:
-#  terraform apply -target=google_compute_network.neg_test -target=google_compute_network_endpoint_group.neg_one -target=google_compute_network_endpoint_group.neg_two -target=google_compute_subnetwork.neg_test
+#  terraform apply -target=google_compute_network.neg_test -target=google_compute_network_endpoint_group.neg_one -target=google_compute_network_endpoint_group.neg_two -target=google_compute_subnetwork.neg_test -target=google_cloud_run_service.default_one -target=google_cloud_run_service.default_two
 # to avoid them
 
 module "api_unicorn" {
@@ -137,6 +137,20 @@ module "api_unicorn" {
       zone = var.zone
     }
   ]
+  backends = {
+    halfandhalf = {
+      backends = [
+        {
+          service  = "cloudrun-srv-tst-one"
+          max_rate = 1
+        },
+        {
+          service  = "cloudrun-srv-tst-two"
+          max_rate = 1
+        },
+      ]
+    }
+  }
   url_map = {
     matcher1 = {
       hostnames = ["cloud-run-test-1.ack.ee"]
@@ -148,7 +162,6 @@ module "api_unicorn" {
         {
           paths   = ["/api/v2/*"]
           service = "cloudrun-srv-tst-two"
-
         }
       ]
       default_service = "cloudrun-srv-tst-two"
@@ -169,6 +182,16 @@ module "api_unicorn" {
         {
           paths   = ["/*"]
           service = "ackee-api-unicorn-two"
+        },
+      ]
+      default_service = "ackee-api-unicorn-two"
+    }
+    matcher4 = {
+      hostnames = ["api-unicorn-3.ackee.cz"]
+      path_rules = [
+        {
+          paths   = ["/half/*"]
+          service = "halfandhalf"
         },
       ]
       default_service = "ackee-api-unicorn-two"

@@ -45,6 +45,21 @@ module "api_unicorn" {
     }
   ]
 
+  backends = {
+    halfandhalf = {
+      backends = [
+        {
+          service  = "ackee-api-unicorn-one"
+          max_rate = 1
+        },
+        {
+          service  = "ackee-api-unicorn-two"
+          max_rate = 1
+        },
+      ]
+    }
+  }
+
   url_map = {
     matcher1 = {
       hostnames  = ["api-unicorn.ackee.cz", "api-unicorn2.ackee.cz"]
@@ -73,7 +88,7 @@ module "api_unicorn" {
       path_rules = [
         {
           paths   = ["/*"]
-          service = "cloud-run-service"
+          service = "halfandhalf"
         },
       ]
     }
@@ -340,6 +355,7 @@ No modules.
 | Name | Type |
 |------|------|
 | [google-beta_google_compute_backend_service.app_backend](https://registry.terraform.io/providers/hashicorp/google-beta/latest/docs/resources/google_compute_backend_service) | resource |
+| [google-beta_google_compute_backend_service.backend](https://registry.terraform.io/providers/hashicorp/google-beta/latest/docs/resources/google_compute_backend_service) | resource |
 | [google-beta_google_compute_backend_service.cloudrun](https://registry.terraform.io/providers/hashicorp/google-beta/latest/docs/resources/google_compute_backend_service) | resource |
 | [google-beta_google_compute_global_forwarding_rule.external_signed](https://registry.terraform.io/providers/hashicorp/google-beta/latest/docs/resources/google_compute_global_forwarding_rule) | resource |
 | [google-beta_google_compute_global_forwarding_rule.google_managed](https://registry.terraform.io/providers/hashicorp/google-beta/latest/docs/resources/google_compute_global_forwarding_rule) | resource |
@@ -349,6 +365,7 @@ No modules.
 | [google_compute_firewall.gcp_hc_ip_allow](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_firewall) | resource |
 | [google_compute_global_address.gca](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_global_address) | resource |
 | [google_compute_global_forwarding_rule.non_tls](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_global_forwarding_rule) | resource |
+| [google_compute_health_check.backends](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_health_check) | resource |
 | [google_compute_health_check.cn_lb](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_health_check) | resource |
 | [google_compute_managed_ssl_certificate.gcs_certs](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_managed_ssl_certificate) | resource |
 | [google_compute_region_network_endpoint_group.cloudrun_neg](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_region_network_endpoint_group) | resource |
@@ -377,6 +394,7 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_allow_non_tls_frontend"></a> [allow\_non\_tls\_frontend](#input\_allow\_non\_tls\_frontend) | If true, enables port 80 frontend - creates non-TLS (http://) variant of LB | `string` | `false` | no |
 | <a name="input_backend_bucket_location"></a> [backend\_bucket\_location](#input\_backend\_bucket\_location) | GCS location(https://cloud.google.com/storage/docs/locations) of bucket where invalid requests are routed. | `string` | `"EUROPE-WEST3"` | no |
+| <a name="input_backends"></a> [backends](#input\_backends) | Custom backends advertised as service set for rate balancing | <pre>map(<br>    object({<br>      timeout_sec               = optional(number)<br>      check_interval_sec        = optional(number)<br>      healthy_threshold         = optional(number)<br>      unhealthy_threshold       = optional(number)<br>      http_backend_protocol     = optional(string)<br>      health_check_request_path = optional(string)<br>      backends = list(object({<br>        service               = string<br>        max_rate              = string<br>        http_backend_protocol = optional(string)<br>        http_backend_timeout  = optional(string)<br>      }))<br>    })<br>  )</pre> | n/a | yes |
 | <a name="input_certificate"></a> [certificate](#input\_certificate) | The certificate in PEM format. The certificate chain must be no greater than 5 certs long. The chain must include at least one intermediate cert. Note: This property is sensitive and will not be displayed in the plan. | `string` | `null` | no |
 | <a name="input_check_interval_sec"></a> [check\_interval\_sec](#input\_check\_interval\_sec) | How often (in seconds) to send a health check. The default value is 5 seconds. | `number` | `5` | no |
 | <a name="input_create_logging_sink_bucket"></a> [create\_logging\_sink\_bucket](#input\_create\_logging\_sink\_bucket) | If true, creates bucket and set up logging sink | `bool` | `false` | no |
@@ -408,7 +426,7 @@ No modules.
 | <a name="input_services"></a> [services](#input\_services) | List of services: cloudrun, neg, bucket, ... to be used in the map | <pre>list(object({<br>    name                      = string<br>    type                      = string<br>    bucket_name               = optional(string)<br>    location                  = optional(string)<br>    zone                      = optional(string)<br>    additional_negs           = optional(list(string))<br>    timeout_sec               = optional(number)<br>    check_interval_sec        = optional(number)<br>    healthy_threshold         = optional(number)<br>    unhealthy_threshold       = optional(number)<br>    http_backend_protocol     = optional(string)<br>    http_backend_timeout      = optional(string)<br>    health_check_request_path = optional(string)<br>    enable_cdn                = optional(bool)<br>  }))</pre> | n/a | yes |
 | <a name="input_timeout_sec"></a> [timeout\_sec](#input\_timeout\_sec) | How long (in seconds) to wait before claiming failure. The default value is 5 seconds. It is invalid for timeout\_sec to have greater value than check\_interval\_sec. | `number` | `5` | no |
 | <a name="input_unhealthy_threshold"></a> [unhealthy\_threshold](#input\_unhealthy\_threshold) | A so-far healthy instance will be marked unhealthy after this many consecutive failures. The default value is 2. | `number` | `2` | no |
-| <a name="input_url_map"></a> [url\_map](#input\_url\_map) | Url map setup | <pre>map(object({<br>    hostnames       = list(string)<br>    default_service = string<br>    path_rules = optional(list(object({<br>      paths   = list(string)<br>      service = string<br>    })))<br>  }))</pre> | n/a | yes |
+| <a name="input_url_map"></a> [url\_map](#input\_url\_map) | Url map setup | <pre>map(object({<br>    hostnames       = list(string)<br>    default_service = string<br>    path_rules = optional(list(object({<br>      paths   = list(string)<br>      service = optional(string)<br>    })))<br>  }))</pre> | n/a | yes |
 | <a name="input_use_random_suffix_for_network_endpoint_group"></a> [use\_random\_suffix\_for\_network\_endpoint\_group](#input\_use\_random\_suffix\_for\_network\_endpoint\_group) | If true, uses random suffix for NEG name | `bool` | `true` | no |
 | <a name="input_zone"></a> [zone](#input\_zone) | GCP zone where we will look for NEGs - optional parameter, if not set, the we will automatically search in all zones in region | `string` | `null` | no |
 

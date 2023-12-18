@@ -1,25 +1,6 @@
 locals {
   random_suffix            = random_string.random_suffix.result
   managed_certificate_name = var.managed_certificate_name != null ? var.managed_certificate_name : "${var.name}-cert-managed"
-  negs = {
-    for item in var.services : item.name => item if item.type == "neg"
-  }
-  endpoint_zone_groups = toset([for i in flatten([
-    for k, v in local.negs :
-    concat([
-      for i in data.google_compute_zones.available :
-      [for j in i.names :
-      "${k}␟${j}"]
-    ], ["${k}␟${lookup(v, "zone", "")}"])
-    ]) :
-    i if split("␟", i)[1] != ""
-  ])
-  services = {
-    for item in var.services : item.name => item if item.type == "cloudrun"
-  }
-  buckets = {
-    for item in var.services : item.name => item if item.type == "bucket"
-  }
 }
 
 resource "random_string" "random_suffix" {
@@ -68,7 +49,15 @@ resource "google_compute_url_map" "cn_lb" {
         lookup(local.services, path_matcher.value.default_service,
           lookup(local.buckets, path_matcher.value.default_service, null)
         )
-      ).type == "bucket" ? google_compute_backend_bucket.bucket[path_matcher.value.default_service].id : null
+        ).type == "bucket" ? google_compute_backend_bucket.bucket[path_matcher.value.default_service].id : lookup(
+        local.negs, path_matcher.value.default_service,
+        lookup(local.services, path_matcher.value.default_service,
+          lookup(local.buckets, path_matcher.value.default_service,
+            lookup(local.backends, path_matcher.value.default_service, null)
+          )
+        )
+      ).type == "backend" ? google_compute_backend_service.backend[path_matcher.value.default_service].id : null
+
       dynamic "path_rule" {
         for_each = path_matcher.value.path_rules
         content {
@@ -76,19 +65,32 @@ resource "google_compute_url_map" "cn_lb" {
           service = lookup(
             local.negs, path_rule.value.service,
             lookup(local.services, path_rule.value.service,
-              lookup(local.buckets, path_rule.value.service, null)
+              lookup(local.buckets, path_rule.value.service,
+                lookup(local.backends, path_rule.value.service, null)
+              )
             )
             ).type == "neg" ? google_compute_backend_service.app_backend[path_rule.value.service].id : lookup(
             local.negs, path_rule.value.service,
             lookup(local.services, path_rule.value.service,
-              lookup(local.buckets, path_rule.value.service, null)
+              lookup(local.buckets, path_rule.value.service,
+                lookup(local.backends, path_rule.value.service, null)
+              )
             )
             ).type == "cloudrun" ? google_compute_backend_service.cloudrun[path_rule.value.service].id : lookup(
             local.negs, path_rule.value.service,
             lookup(local.services, path_rule.value.service,
-              lookup(local.buckets, path_rule.value.service, null)
+              lookup(local.buckets, path_rule.value.service,
+                lookup(local.backends, path_rule.value.service, null)
+              )
             )
-          ).type == "bucket" ? google_compute_backend_bucket.bucket[path_rule.value.service].id : null
+            ).type == "bucket" ? google_compute_backend_bucket.bucket[path_rule.value.service].id : lookup(
+            local.negs, path_rule.value.service,
+            lookup(local.services, path_rule.value.service,
+              lookup(local.buckets, path_rule.value.service,
+                lookup(local.backends, path_rule.value.service, null)
+              )
+            )
+          ).type == "backend" ? google_compute_backend_service.backend[path_rule.value.service].id : null
         }
       }
       dynamic "path_rule" {

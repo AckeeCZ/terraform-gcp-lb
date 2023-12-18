@@ -1,3 +1,9 @@
+locals {
+  services = {
+    for item in var.services : item.name => item if item.type == "cloudrun"
+  }
+}
+
 data "google_cloud_run_service" "cloud_run_service" {
   for_each = local.services
   name     = each.value.name == null ? var.region : each.value.name

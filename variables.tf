@@ -69,17 +69,39 @@ variable "services" {
   }))
   description = "List of services: cloudrun, neg, bucket, ... to be used in the map"
 }
+
+variable "backends" {
+  type = map(
+    object({
+      timeout_sec               = optional(number)
+      check_interval_sec        = optional(number)
+      healthy_threshold         = optional(number)
+      unhealthy_threshold       = optional(number)
+      http_backend_protocol     = optional(string)
+      health_check_request_path = optional(string)
+      backends = list(object({
+        service               = string
+        max_rate              = string
+        http_backend_protocol = optional(string)
+        http_backend_timeout  = optional(string)
+      }))
+    })
+  )
+  description = "Custom backends advertised as service set for rate balancing"
+}
+
 variable "url_map" {
   type = map(object({
     hostnames       = list(string)
     default_service = string
     path_rules = optional(list(object({
       paths   = list(string)
-      service = string
+      service = optional(string)
     })))
   }))
   description = "Url map setup"
 }
+
 variable "http_backend_timeout" {
   type        = string
   description = "Time of http request timeout (in seconds)"
