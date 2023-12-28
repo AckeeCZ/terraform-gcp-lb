@@ -148,8 +148,12 @@ module "api_unicorn" {
         {
           paths   = ["/api/v2/*"]
           service = "cloudrun-srv-tst-two"
-
         }
+      ]
+      query_parameter_matches = [
+        "a",
+        "b",
+        "c",
       ]
       default_service = "cloudrun-srv-tst-two"
     }

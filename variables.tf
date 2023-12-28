@@ -77,6 +77,7 @@ variable "url_map" {
       paths   = list(string)
       service = string
     })))
+    query_parameter_matches = optional(list(string))
   }))
   description = "Url map setup"
 }

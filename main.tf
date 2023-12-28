@@ -91,6 +91,22 @@ resource "google_compute_url_map" "cn_lb" {
           ).type == "bucket" ? google_compute_backend_bucket.bucket[path_rule.value.service].id : null
         }
       }
+
+      dynamic "route_rules" {
+        for_each = path_matcher.value.query_parameter_matches == null ? [] : [1]
+        content {
+          priority = 1
+          match_rules {
+            dynamic "query_parameter_matches" {
+              for_each = path_matcher.value.query_parameter_matches
+              content {
+                name = query_parameter_matches.value
+              }
+            }
+          }
+        }
+      }
+
       dynamic "path_rule" {
         for_each = var.mask_metrics_endpoint ? [1] : []
         content {
