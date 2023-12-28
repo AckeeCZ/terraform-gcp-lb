@@ -77,8 +77,22 @@ variable "url_map" {
       paths   = list(string)
       service = string
     })))
+    route_rules = optional(list(object({
+      service = string
+      paths = list(object({
+        name                    = string
+        priority                = number
+        query_parameter_matches = optional(string)
+        url_rewrite             = optional(string)
+      }))
+    })))
   }))
   description = "Url map setup"
+
+  validation {
+    condition     = !(contains(keys(var.url_map), "route_rules") && contains(keys(var.url_map), "path_rules"))
+    error_message = "Both route_rules and path_rules cannot be set at the same time. Only one of them should be used."
+  }
 }
 variable "http_backend_timeout" {
   type        = string

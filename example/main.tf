@@ -173,6 +173,22 @@ module "api_unicorn" {
       ]
       default_service = "ackee-api-unicorn-two"
     }
+    matcher4 = {
+      hostnames = ["api-unicorn-4.ackee.cz"]
+      route_rules = [
+        {
+          paths = [
+            {
+              name                    = "/api/v1/ackee",
+              priority                = 1,
+              query_parameter_matches = "key",
+              url_rewrite             = "/api/v2/ackee"
+            }
+          ]
+          service = "ackee-api-unicorn-one"
+        }
+      ]
+    }
   }
   depends_on = [
     google_compute_network_endpoint_group.neg_one,
