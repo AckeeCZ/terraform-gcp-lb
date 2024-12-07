@@ -29,6 +29,7 @@ resource "google_compute_backend_service" "cloudrun" {
   dynamic "iap" {
     for_each = [for i in [lookup(var.iap_setup, each.key, var.default_iap_setup)] : i if i != null]
     content {
+      enabled              = true
       oauth2_client_id     = iap.value.oauth2_client_id
       oauth2_client_secret = iap.value.oauth2_client_secret
     }
