@@ -70,7 +70,7 @@ resource "google_compute_url_map" "cn_lb" {
         )
       ).type == "bucket" ? google_compute_backend_bucket.bucket[path_matcher.value.default_service].id : null
       dynamic "path_rule" {
-        for_each = path_matcher.value.path_rules
+        for_each = path_matcher.value.path_rules != null ? path_matcher.value.path_rules : []
         content {
           paths = path_rule.value.paths
           service = lookup(
@@ -91,6 +91,59 @@ resource "google_compute_url_map" "cn_lb" {
           ).type == "bucket" ? google_compute_backend_bucket.bucket[path_rule.value.service].id : null
         }
       }
+
+      dynamic "route_rules" {
+        for_each = path_matcher.value.route_rules != null ? { for e in tolist(flatten([
+          for route_rule_idx, route_rule in path_matcher.value.route_rules : [
+            for path_idx, path in route_rule.paths : {
+              path                    = path.name
+              priority                = path.priority
+              service                 = route_rule.service
+              query_parameter_matches = path.query_parameter_matches
+              url_rewrite             = path.url_rewrite
+            }
+          ]
+          ])) : e.priority => e
+        } : []
+        content {
+          priority = route_rules.value.priority
+          service = lookup(
+            local.negs, route_rules.value.service,
+            lookup(local.services, route_rules.value.service,
+              lookup(local.buckets, route_rules.value.service, null)
+            )
+            ).type == "neg" ? google_compute_backend_service.app_backend[route_rules.value.service].id : lookup(
+            local.negs, route_rules.value.service,
+            lookup(local.services, route_rules.value.service,
+              lookup(local.buckets, route_rules.value.service, null)
+            )
+            ).type == "cloudrun" ? google_compute_backend_service.cloudrun[route_rules.value.service].id : lookup(
+            local.negs, route_rules.value.service,
+            lookup(local.services, route_rules.value.service,
+              lookup(local.buckets, route_rules.value.service, null)
+            )
+          ).type == "bucket" ? google_compute_backend_bucket.bucket[route_rules.value.service].id : null
+          match_rules {
+            full_path_match = route_rules.value.path
+            dynamic "query_parameter_matches" {
+              for_each = route_rules.value.query_parameter_matches != null ? [1] : []
+              content {
+                name          = route_rules.value.query_parameter_matches
+                present_match = true
+              }
+            }
+          }
+          dynamic "route_action" {
+            for_each = route_rules.value.url_rewrite != null ? [1] : []
+            content {
+              url_rewrite {
+                path_prefix_rewrite = route_rules.value.url_rewrite
+              }
+            }
+          }
+        }
+      }
+
       dynamic "path_rule" {
         for_each = var.mask_metrics_endpoint ? [1] : []
         content {
