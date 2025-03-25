@@ -104,7 +104,7 @@ resource "google_compute_url_map" "cn_lb" {
             }
           ]
           ])) : e.priority => e
-        } : []
+        } : {}
         content {
           priority = route_rules.value.priority
           service = lookup(
