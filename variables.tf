@@ -255,3 +255,27 @@ variable "non_tls_global_forwarding_rule_name" {
   type        = string
   default     = ""
 }
+
+variable "custom_self_signed_forwarding_rule_name" {
+  description = "If set, changes name of self signed forwarding rule. Used for migration."
+  type        = string
+  default     = ""
+}
+
+variable "custom_target_https_proxy_name" {
+  description = "Custom name for HTTPS proxy name used."
+  type        = string
+  default     = ""
+}
+
+variable "self_signed_certificate_name" {
+  description = "Custom name for self-signed certificate name. If `self_signed_tls` is not true, this certificate will be used instead of creating a new one."
+  type        = string
+  default     = ""
+}
+
+variable "self_signed_ssl_policy" {
+  description = "The SSL policy to apply to the HTTPS target proxy. If not specified, no SSL policy will be applied."
+  type        = string
+  default     = null
+}
