@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v7.1.2] - 2025-08-18
+### Added
+- add `custom_self_signed_forwarding_rule_name`, `custom_target_https_proxy_name`, `self_signed_certificate_name`, `self_signed_tls` for easy migrations of https target proxies with self-signed certificates.
+- add `self_signed_ssl_policy` to allow setting a custom SSL policy
+
 ## [v7.1.1] - 2025-03-25
 ### Fixed
 - inconsistent conditional result types error when `route_rules` are not specified

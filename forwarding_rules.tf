@@ -1,20 +1,21 @@
 // self-signed certificate variant
 
 resource "google_compute_target_https_proxy" "self_signed" {
-  name    = "http-proxy-${local.random_suffix}"
+  name    = var.custom_target_https_proxy_name == "" ? "http-proxy-${local.random_suffix}" : var.custom_target_https_proxy_name
   url_map = google_compute_url_map.cn_lb.id
 
-  ssl_certificates = [google_compute_ssl_certificate.gcs_certs[0].self_link]
-  count            = var.self_signed_tls ? 1 : 0
+  ssl_certificates = var.self_signed_certificate_name != "" ? [var.self_signed_certificate_name] : [google_compute_ssl_certificate.gcs_certs[0].self_link]
+  ssl_policy       = var.self_signed_ssl_policy
+  count            = var.self_signed_tls || var.self_signed_certificate_name != "" ? 1 : 0
 }
 
 resource "google_compute_global_forwarding_rule" "self_signed" {
   provider   = google-beta
-  name       = "fw-rule-${local.random_suffix}"
+  name       = var.custom_self_signed_forwarding_rule_name == "" ? "fw-rule-${local.random_suffix}" : var.custom_self_signed_forwarding_rule_name
   target     = google_compute_target_https_proxy.self_signed[0].id
   ip_address = google_compute_global_address.gca.address
   port_range = "443"
-  count      = var.self_signed_tls ? 1 : 0
+  count      = var.self_signed_tls || var.self_signed_certificate_name != "" ? 1 : 0
 }
 
 // Google-managed certificate variant
