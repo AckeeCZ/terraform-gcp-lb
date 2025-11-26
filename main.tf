@@ -103,7 +103,7 @@ resource "google_compute_url_map" "cn_lb" {
               url_rewrite             = path.url_rewrite
             }
           ]
-          ])) : e.priority => e
+          ])) : format("%05d", tonumber(e.priority)) => e
         } : {}
         content {
           priority = route_rules.value.priority
