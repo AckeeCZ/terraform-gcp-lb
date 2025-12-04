@@ -55,6 +55,7 @@ variable "services" {
     name                      = string
     type                      = string
     bucket_name               = optional(string)
+    backend_name              = optional(string)
     location                  = optional(string)
     zone                      = optional(string)
     additional_negs           = optional(list(string))
@@ -67,7 +68,11 @@ variable "services" {
     health_check_request_path = optional(string)
     enable_cdn                = optional(bool)
   }))
-  description = "List of services: cloudrun, neg, bucket, ... to be used in the map"
+  description = <<EOT
+    List of services: cloudrun, neg, bucket, ... to be used in the map
+
+    Use backend_name to specify the naming for load balancer (Backend, NEG). Defaults to `name` attribute.
+  EOT
 }
 variable "url_map" {
   type = map(object({

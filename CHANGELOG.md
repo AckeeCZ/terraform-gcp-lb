@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- add `backend_name` attribute to services for custom load balancer resource naming, enabling multi-region Cloud Run support
+
 ## [v7.1.2] - 2025-08-18
 ### Added
 - add `custom_self_signed_forwarding_rule_name`, `custom_target_https_proxy_name`, `self_signed_certificate_name`, `self_signed_tls` for easy migrations of https target proxies with self-signed certificates.
