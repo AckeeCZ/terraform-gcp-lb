@@ -80,7 +80,8 @@ variable "url_map" {
     route_rules = optional(list(object({
       service = string
       paths = list(object({
-        name                    = string
+        name                    = optional(string)
+        name_prefix             = optional(string)
         priority                = number
         query_parameter_matches = optional(string)
         url_rewrite             = optional(string)
@@ -92,6 +93,19 @@ variable "url_map" {
   validation {
     condition     = !(contains(keys(var.url_map), "route_rules") && contains(keys(var.url_map), "path_rules"))
     error_message = "Both route_rules and path_rules cannot be set at the same time. Only one of them should be used."
+  }
+  validation {
+    condition = alltrue([
+      for m in values(var.url_map) :
+      alltrue([
+        for rr in coalesce(m.route_rules, []) :
+        alltrue([
+          for p in rr.paths :
+          (try(p.name, null) != null) != (try(p.name_prefix, null) != null)
+        ])
+      ])
+    ])
+    error_message = "Only one of 'name' or 'name_prefix' can be specified per path in route_rules. Use 'name' for exact matches, and 'name_prefix' for matching paths that start with the given prefix."
   }
 }
 variable "http_backend_timeout" {

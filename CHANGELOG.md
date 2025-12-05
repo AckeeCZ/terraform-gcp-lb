@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v7.2.0] - 2025-12-15
+### Added
+- Support prefix path matching in `url_map`via `name_prefix` for path name.
+- Validation to ensure only one of `name` or `name_prefix` is set per path.
+
 ## [v7.1.3] - 2025-11-27
 ### Fixed
 - routing rules ordering by zero-padding priority keys so priorities are compared numerically rather than lexicographically.

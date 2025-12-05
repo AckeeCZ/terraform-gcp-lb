@@ -97,6 +97,7 @@ resource "google_compute_url_map" "cn_lb" {
           for route_rule_idx, route_rule in path_matcher.value.route_rules : [
             for path_idx, path in route_rule.paths : {
               path                    = path.name
+              path_prefix             = path.name_prefix
               priority                = path.priority
               service                 = route_rule.service
               query_parameter_matches = path.query_parameter_matches
@@ -124,7 +125,8 @@ resource "google_compute_url_map" "cn_lb" {
             )
           ).type == "bucket" ? google_compute_backend_bucket.bucket[route_rules.value.service].id : null
           match_rules {
-            full_path_match = route_rules.value.path
+            full_path_match = route_rules.value.path != null ? route_rules.value.path : null
+            prefix_match    = route_rules.value.path_prefix != null ? route_rules.value.path_prefix : null
             dynamic "query_parameter_matches" {
               for_each = route_rules.value.query_parameter_matches != null ? [1] : []
               content {
