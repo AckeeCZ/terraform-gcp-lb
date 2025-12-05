@@ -2,7 +2,7 @@ locals {
   random_suffix            = random_string.random_suffix.result
   managed_certificate_name = var.managed_certificate_name != null ? var.managed_certificate_name : "${var.name}-cert-managed"
   negs = {
-    for item in var.services : item.name => item if item.type == "neg"
+    for item in var.services : coalesce(item.backend_name, item.name) => item if item.type == "neg"
   }
   endpoint_zone_groups = toset([for i in flatten([
     for k, v in local.negs :
@@ -15,7 +15,7 @@ locals {
     i if split("␟", i)[1] != ""
   ])
   services = {
-    for item in var.services : item.name => item if item.type == "cloudrun"
+    for item in var.services : coalesce(item.backend_name, item.name) => item if item.type == "cloudrun"
   }
   buckets = {
     for item in var.services : item.name => item if item.type == "bucket"
