@@ -315,7 +315,7 @@ brew install pre-commit
 pre-commit install
 ```
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
@@ -406,13 +406,13 @@ No modules.
 | <a name="input_project"></a> [project](#input\_project) | Project ID | `string` | n/a | yes |
 | <a name="input_random_suffix_size"></a> [random\_suffix\_size](#input\_random\_suffix\_size) | Size of random suffix | `number` | `8` | no |
 | <a name="input_region"></a> [region](#input\_region) | GCP region where we will look for NEGs | `string` | n/a | yes |
-| <a name="input_self_signed_tls"></a> [self\_signed\_tls](#input\_self\_signed\_tls) | If true, creates self-signed TLS cert | `bool` | `false` | no |
 | <a name="input_self_signed_certificate_name"></a> [self\_signed\_certificate\_name](#input\_self\_signed\_certificate\_name) | Custom name for self-signed certificate name. If `self_signed_tls` is not true, this certificate will be used instead of creating a new one. | `string` | `""` | no |
 | <a name="input_self_signed_ssl_policy"></a> [self\_signed\_ssl\_policy](#input\_self\_signed\_ssl\_policy) | The SSL policy to apply to the HTTPS target proxy. If not specified, no SSL policy will be applied. | `string` | `null` | no |
+| <a name="input_self_signed_tls"></a> [self\_signed\_tls](#input\_self\_signed\_tls) | If true, creates self-signed TLS cert | `bool` | `false` | no |
 | <a name="input_services"></a> [services](#input\_services) | List of services: cloudrun, neg, bucket, ... to be used in the map | <pre>list(object({<br/>    name                      = string<br/>    type                      = string<br/>    bucket_name               = optional(string)<br/>    location                  = optional(string)<br/>    zone                      = optional(string)<br/>    additional_negs           = optional(list(string))<br/>    timeout_sec               = optional(number)<br/>    check_interval_sec        = optional(number)<br/>    healthy_threshold         = optional(number)<br/>    unhealthy_threshold       = optional(number)<br/>    http_backend_protocol     = optional(string)<br/>    http_backend_timeout      = optional(string)<br/>    health_check_request_path = optional(string)<br/>    enable_cdn                = optional(bool)<br/>  }))</pre> | n/a | yes |
 | <a name="input_timeout_sec"></a> [timeout\_sec](#input\_timeout\_sec) | How long (in seconds) to wait before claiming failure. The default value is 5 seconds. It is invalid for timeout\_sec to have greater value than check\_interval\_sec. | `number` | `5` | no |
 | <a name="input_unhealthy_threshold"></a> [unhealthy\_threshold](#input\_unhealthy\_threshold) | A so-far healthy instance will be marked unhealthy after this many consecutive failures. The default value is 2. | `number` | `2` | no |
-| <a name="input_url_map"></a> [url\_map](#input\_url\_map) | Url map setup | <pre>map(object({<br/>    hostnames       = list(string)<br/>    default_service = string<br/>    path_rules = optional(list(object({<br/>      paths   = list(string)<br/>      service = string<br/>    })))<br/>    route_rules = optional(list(object({<br/>      paths = list(object({<br/>        name = string<br/>        priority = number<br/>        query_parameter_matches = optional(string)<br/>        url_rewrite = optional(string)<br/>      }))<br/>      service = string<br/>    })))<br/>  }))</pre> | n/a | yes |
+| <a name="input_url_map"></a> [url\_map](#input\_url\_map) | Url map setup | <pre>map(object({<br/>    hostnames       = list(string)<br/>    default_service = string<br/>    path_rules = optional(list(object({<br/>      paths   = list(string)<br/>      service = string<br/>    })))<br/>    route_rules = optional(list(object({<br/>      service = string<br/>      paths = list(object({<br/>        name                    = string<br/>        priority                = number<br/>        query_parameter_matches = optional(string)<br/>        url_rewrite             = optional(string)<br/>      }))<br/>    })))<br/>  }))</pre> | n/a | yes |
 | <a name="input_use_random_suffix_for_network_endpoint_group"></a> [use\_random\_suffix\_for\_network\_endpoint\_group](#input\_use\_random\_suffix\_for\_network\_endpoint\_group) | If true, uses random suffix for NEG name | `bool` | `true` | no |
 | <a name="input_zone"></a> [zone](#input\_zone) | GCP zone where we will look for NEGs - optional parameter, if not set, the we will automatically search in all zones in region | `string` | `null` | no |
 
@@ -421,4 +421,4 @@ No modules.
 | Name | Description |
 |------|-------------|
 | <a name="output_ip_address"></a> [ip\_address](#output\_ip\_address) | IP address |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->
