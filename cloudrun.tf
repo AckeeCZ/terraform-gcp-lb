@@ -19,9 +19,10 @@ resource "google_compute_backend_service" "cloudrun" {
   for_each = local.services
   name     = "${each.key}-${local.random_suffix}"
 
-  protocol    = "HTTP"
-  port_name   = "http"
-  timeout_sec = 30
+  protocol               = "HTTP"
+  port_name              = "http"
+  timeout_sec            = 30
+  custom_request_headers = try(each.value.custom_request_headers, [])
 
   backend {
     group = google_compute_region_network_endpoint_group.cloudrun_neg[each.key].id
