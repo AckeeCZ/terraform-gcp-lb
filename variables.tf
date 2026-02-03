@@ -67,11 +67,13 @@ variable "services" {
     http_backend_timeout      = optional(string)
     health_check_request_path = optional(string)
     enable_cdn                = optional(bool)
+    custom_request_headers    = optional(list(string))
   }))
   description = <<EOT
     List of services: cloudrun, neg, bucket, ... to be used in the map
 
     Use backend_name to specify the naming for load balancer (Backend, NEG). Defaults to `name` attribute.
+    Use custom_request_headers to specify list of custom request headers to add at the load balancer. Example: ["X-My-Header: value"]
   EOT
 }
 variable "url_map" {

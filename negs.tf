@@ -20,6 +20,8 @@ resource "google_compute_backend_service" "app_backend" {
   protocol              = lookup(each.value, "http_backend_protocol", var.http_backend_protocol)
   timeout_sec           = lookup(each.value, "http_backend_timeout", var.http_backend_timeout)
 
+  custom_request_headers = try(each.value.custom_request_headers, [])
+
   dynamic "backend" {
     for_each = concat([
       for i in local.endpoint_zone_groups : data.google_compute_network_endpoint_group.cn_lb[i] if split("␟", i)[0] == each.key
